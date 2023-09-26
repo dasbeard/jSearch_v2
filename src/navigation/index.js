@@ -8,7 +8,9 @@ import { AppNavigator } from './app.navigator';
 
 import { AuthContext } from '../services/authentication/authentication.context';
 
-import { View, Text } from 'react-native';
+import { ImageBackground } from 'react-native';
+
+import BG from '../../assets/header2.jpg';
 
 export const EntryNavigation = () => {
   const { isAuthenticated } = useContext(AuthContext);
@@ -22,8 +24,16 @@ export const EntryNavigation = () => {
   }, [isAuthenticated]);
 
   return (
-    <NavigationContainer>
-      {isAuthenticated ? <AppNavigator /> : <LoginNavigator />}
-    </NavigationContainer>
+    <ImageBackground
+      source={BG}
+      style={{
+        overflow: 'hidden',
+        flex: 1,
+      }}
+    >
+      <NavigationContainer>
+        {isAuthenticated ? <AppNavigator /> : <LoginNavigator />}
+      </NavigationContainer>
+    </ImageBackground>
   );
 };
