@@ -4,15 +4,17 @@ import { ThemeProvider } from 'styled-components';
 
 import { theme } from './src/infrastructure/theme';
 
-import { Text } from 'react-native-paper';
-import { View } from 'react-native';
 import { EntryNavigation } from './src/navigation';
+
+import { AuthenticationContext } from './src/services/authentication/authentication.context';
 
 export default function App() {
   return (
     <Fragment>
       <ThemeProvider theme={theme}>
-        <EntryNavigation />
+        <AuthenticationContext>
+          <EntryNavigation />
+        </AuthenticationContext>
       </ThemeProvider>
       <StatusBar style='auto' />
     </Fragment>
