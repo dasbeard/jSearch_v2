@@ -8,14 +8,16 @@ export const Container = styled.View`
   /* margin-top: 6px; */
 `;
 
-export const LogoContainer = styled.View``;
+export const ContentContainer = styled.View`
+  margin-right: 9px;
+  margin-left: 9px;
+`;
 
 export const Logo = styled.Image`
   height: 65px;
   width: 65px;
   object-fit: contain;
   margin: 6px;
-  margin-right: 8px;
   border-radius: 6px;
   align-self: center;
 `;

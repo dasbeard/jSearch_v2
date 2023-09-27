@@ -3,8 +3,12 @@ import { SegmentedButtons } from 'react-native-paper';
 
 import { colors } from '../../../infrastructure/theme/colors';
 
+import { View } from 'react-native';
+
+const size = 12;
+
 export const DetailsSelector = () => {
-  const [activeTab, setActiveTab] = useState('');
+  const [activeTab, setActiveTab] = useState('About');
   const navButtons = [
     {
       value: 'About',
@@ -14,6 +18,7 @@ export const DetailsSelector = () => {
         backgroundColor:
           activeTab === 'About' ? colors.ui.muted : colors.bg.primary,
       },
+      labelStyle: { fontSize: size },
     },
     {
       value: 'Qualifications',
@@ -24,6 +29,7 @@ export const DetailsSelector = () => {
         backgroundColor:
           activeTab === 'Qualifications' ? colors.ui.muted : colors.bg.primary,
       },
+      labelStyle: { fontSize: size },
     },
     {
       value: 'Skills',
@@ -33,6 +39,7 @@ export const DetailsSelector = () => {
         backgroundColor:
           activeTab === 'Skills' ? colors.ui.muted : colors.bg.primary,
       },
+      labelStyle: { fontSize: size },
     },
     {
       value: 'Responsibilities',
@@ -44,14 +51,18 @@ export const DetailsSelector = () => {
             ? colors.ui.muted
             : colors.bg.primary,
       },
+      labelStyle: { fontSize: size },
     },
   ];
 
   return (
-    <SegmentedButtons
-      value={activeTab}
-      onValueChange={setActiveTab}
-      buttons={navButtons}
-    />
+    <View>
+      <SegmentedButtons
+        density='small'
+        value={activeTab}
+        onValueChange={setActiveTab}
+        buttons={navButtons}
+      />
+    </View>
   );
 };

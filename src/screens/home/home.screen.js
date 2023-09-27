@@ -7,19 +7,13 @@ import BG from '../../../assets/bg-image.jpg';
 
 import * as tempSearchData from '../../../testSearchData.json';
 import { JobCard } from '../../features/job-card/job-card.component';
+import { Fragment } from 'react';
 
 const data = tempSearchData.data;
 
 export const HomeScreen = () => {
   return (
-    <ImageBackground
-      source={BG}
-      style={{
-        resizeMode: 'cover',
-        overflow: 'hidden',
-        flex: 1,
-      }}
-    >
+    <Fragment>
       <Search />
 
       <FlatList
@@ -30,6 +24,6 @@ export const HomeScreen = () => {
         }}
         style={{ width: '95%', alignSelf: 'center' }}
       />
-    </ImageBackground>
+    </Fragment>
   );
 };

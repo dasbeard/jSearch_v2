@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { TouchableOpacity, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
-import { Text } from '../../infrastructure/components/text.component';
 
 import { checkImageIsSVG } from '../../infrastructure/checkImageIsSVG';
+import TempLogo from '../../../assets/TempLogo.jpeg';
+
+import { Text } from '../../infrastructure/components/text.component';
 
 import { Container, JobContainer, JobContent, Logo } from './job-card.styles';
-import TempLogo from '../../../assets/TempLogo.jpeg';
 
 export const JobCard = ({ jobData }) => {
   const navigation = useNavigation();
