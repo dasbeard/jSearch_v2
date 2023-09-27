@@ -11,17 +11,21 @@ export const Container = styled.View`
 `;
 
 export const Logo = styled.Image`
-  height: 55px;
-  width: 55px;
+  height: 65px;
+  width: 65px;
   object-fit: contain;
   margin: 6px;
+  margin-right: 8px;
   border-radius: 6px;
+  align-self: center;
 `;
 
 export const JobContainer = styled.View`
   flex: 1;
   flex-direction: row;
   justify-content: space-between;
+  padding-top: 4px;
+  padding-bottom: 4px;
 `;
 
 export const JobContent = styled.View`

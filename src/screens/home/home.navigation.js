@@ -2,7 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { HomeScreen } from './home.screen';
 
-import { JobDetails } from '../../features/job-details/job-details.component';
+import { JobDetails } from '../../screens/job-details/job-details.component';
 import { Fitler } from '../../features/filter/filter.component';
 
 const Stack = createNativeStackNavigator();
@@ -19,9 +19,10 @@ export const HomeNavigation = () => {
         <Stack.Screen
           name='Details'
           component={JobDetails}
-          options={({ route }) => {
-            title: route.params.jobDetails.job_title;
-          }}
+          options={({ route }) => ({
+            // title: route.params.jobDetails.job_title,
+            title: 'Job Details',
+          })}
         />
       </Stack.Group>
     </Stack.Navigator>
