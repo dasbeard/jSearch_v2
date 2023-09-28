@@ -18,8 +18,21 @@ export const HomeNavigation = () => {
         <Stack.Screen name='HomeScreen' component={HomeScreen} />
       </Stack.Group>
 
-      <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name='Filters' component={Fitler} />
+      <Stack.Group
+        screenOptions={{
+          headerTitleAlign: 'center',
+
+          headerShown: true,
+          presentation: 'modal',
+        }}
+      >
+        <Stack.Screen
+          name='Filters'
+          component={Fitler}
+          options={{
+            title: 'Search Parameters',
+          }}
+        />
         <Stack.Screen
           name='Details'
           component={JobDetails}

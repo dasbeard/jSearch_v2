@@ -5,7 +5,7 @@ export const colors = {
     tertiary: '#EEB902',
     quaternary: '#97cc04',
     disabled: '#C1D6DB',
-    muted: '#93AECC',
+    muted: '#a8bed6',
     error: '#D0421B',
     success: '#138000',
   },
