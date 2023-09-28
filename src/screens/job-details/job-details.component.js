@@ -1,18 +1,25 @@
-import { View } from 'react-native';
+import { useState } from 'react';
+import { Platform, ScrollView, View } from 'react-native';
 import { Surface } from 'react-native-paper';
 
-import { Text } from '../../infrastructure/components/text.component';
 import { DetailsHeader } from '../../components/job-details/job-details-header/details-header.component';
 
-import { Container, ContentContainer } from './job-details.styles';
 import { DetailsSelector } from '../../components/job-details/details-selector/details-selector.component';
 import { Spacer } from '../../infrastructure/components/spacer.component';
+import { Specifics } from '../../components/job-details/specifics/specifics.component';
+
+import { Container } from './job-details.styles';
 
 export const JobDetails = ({ route }) => {
   const { jobDetails } = route.params;
+  const [activeTab, setActiveTab] = useState('About');
 
   return (
-    <Container>
+    <Container
+      style={{
+        paddingBottom: Platform.OS == 'android' ? 155 : 200,
+      }}
+    >
       <Surface>
         <DetailsHeader
           logo={jobDetails.employer_logo}
@@ -23,14 +30,43 @@ export const JobDetails = ({ route }) => {
       </Surface>
 
       <Spacer size='md' />
-      <ContentContainer>
-        <DetailsSelector />
+
+      <View style={{ paddingHorizontal: 6 }}>
+        <DetailsSelector activeTab={activeTab} setActiveTab={setActiveTab} />
         <Spacer size='md' />
 
-        <Text>Job Details</Text>
-      </ContentContainer>
+        <ScrollView>
+          {activeTab === 'About' ? (
+            <Specifics
+              title={null}
+              points={null}
+              description={jobDetails.job_description ?? 'Not Provided'}
+            />
+          ) : activeTab === 'Qualifications' ? (
+            <Specifics
+              title={null}
+              points={
+                jobDetails.job_highlights?.Qualifications ?? ['Not Provided']
+              }
+              description={null}
+            />
+          ) : activeTab === 'Skills' ? (
+            <Specifics
+              title={null}
+              points={jobDetails.job_required_skills ?? ['Not provided']}
+              description={null}
+            />
+          ) : activeTab === 'Responsibilities' ? (
+            <Specifics
+              title={null}
+              points={
+                jobDetails.job_highlights?.Responsibilities ?? ['Not provided']
+              }
+              description={null}
+            />
+          ) : null}
+        </ScrollView>
+      </View>
     </Container>
   );
 };
-
-// style={{ paddingHorizontal: 5 }}

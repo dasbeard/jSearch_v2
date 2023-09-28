@@ -7,8 +7,8 @@ import { View } from 'react-native';
 
 const size = 12;
 
-export const DetailsSelector = () => {
-  const [activeTab, setActiveTab] = useState('About');
+export const DetailsSelector = (props) => {
+  const { activeTab, setActiveTab } = props;
   const navButtons = [
     {
       value: 'About',
@@ -32,16 +32,6 @@ export const DetailsSelector = () => {
       labelStyle: { fontSize: size },
     },
     {
-      value: 'Skills',
-      label: 'Skills',
-      // onPress: () => alert('test'),
-      style: {
-        backgroundColor:
-          activeTab === 'Skills' ? colors.ui.muted : colors.bg.primary,
-      },
-      labelStyle: { fontSize: size },
-    },
-    {
       value: 'Responsibilities',
       label: 'Responsibilities',
       // onPress: () => alert('test'),
@@ -50,6 +40,16 @@ export const DetailsSelector = () => {
           activeTab === 'Responsibilities'
             ? colors.ui.muted
             : colors.bg.primary,
+      },
+      labelStyle: { fontSize: size },
+    },
+    {
+      value: 'Skills',
+      label: 'Skills',
+      // onPress: () => alert('test'),
+      style: {
+        backgroundColor:
+          activeTab === 'Skills' ? colors.ui.muted : colors.bg.primary,
       },
       labelStyle: { fontSize: size },
     },

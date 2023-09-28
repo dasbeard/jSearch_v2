@@ -4,13 +4,7 @@ import { colors } from '../../infrastructure/theme/colors';
 export const Container = styled.View`
   flex: 1;
   background-color: ${colors.bg.secondary};
-
-  /* margin-top: 6px; */
-`;
-
-export const ContentContainer = styled.View`
-  margin-right: 9px;
-  margin-left: 9px;
+  /* padding-bottom: 190px; */
 `;
 
 export const Logo = styled.Image`
