@@ -16,7 +16,8 @@ export const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const { loginWithEmail, error, setError } = useContext(AuthContext);
+  const { loginWithEmail, error, setError, isLoading } =
+    useContext(AuthContext);
 
   useEffect(() => {
     if (error !== null) {
@@ -63,11 +64,13 @@ export const Login = ({ navigation }) => {
             <Text variant='error'>{error}</Text>
           </Spacer>
         )}
+        <Text>Testing isLoading: '{error}'</Text>
 
         <AccountButton
+          disabled={isLoading}
           mode='contained'
           icon='lock-open-outline'
-          buttonColor={colors.ui.primary}
+          buttonColor={isLoading ? colors.ui.disabled : colors.ui.primary}
           onPress={() => loginWithEmail(email, password)}
         >
           Login
@@ -77,10 +80,11 @@ export const Login = ({ navigation }) => {
 
         <Spacer size='xxl'>
           <Button
+            disabled={isLoading}
             mode='contained'
             icon='arrow-left'
             onPress={() => navigation.goBack()}
-            buttonColor={colors.ui.muted}
+            buttonColor={isLoading ? colors.ui.disabled : colors.ui.muted}
           >
             Go Back
           </Button>

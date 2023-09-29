@@ -78,9 +78,10 @@ export const Register = ({ navigation }) => {
         )}
 
         <AccountButton
+          disabled={isLoading}
           mode='contained'
           icon='email-outline'
-          buttonColor={colors.ui.primary}
+          buttonColor={isLoading ? colors.ui.disabled : colors.ui.primary}
           onPress={() => registerWithEmail(email, password, confirmPassword)}
         >
           Register
@@ -93,7 +94,7 @@ export const Register = ({ navigation }) => {
             mode='contained'
             icon='arrow-left'
             onPress={() => navigation.goBack()}
-            buttonColor={colors.ui.muted}
+            buttonColor={isLoading ? colors.ui.disabled : colors.ui.muted}
           >
             Go Back
           </Button>

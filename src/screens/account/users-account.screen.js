@@ -10,7 +10,8 @@ import { colors } from '../../infrastructure/theme/colors';
 import { Container, LogoutButton } from './users-account.styles';
 
 export const UserAccount = () => {
-  const { logoutUser, user } = useContext(AuthContext);
+  const { logoutUser, user, deleteAccount, isLoading } =
+    useContext(AuthContext);
 
   return (
     <Container>
@@ -26,11 +27,23 @@ export const UserAccount = () => {
 
       <Spacer size='xl' />
       <LogoutButton
-        buttonColor={colors.ui.secondary}
+        disabled={isLoading}
+        buttonColor={isLoading ? colors.ui.disabled : colors.ui.secondary}
         mode='contained'
         onPress={() => logoutUser()}
       >
         Logout
+      </LogoutButton>
+
+      <Spacer size='xl' />
+
+      <LogoutButton
+        disabled={isLoading}
+        buttonColor={isLoading ? colors.ui.disabled : colors.ui.error}
+        mode='contained'
+        onPress={() => deleteAccount()}
+      >
+        Delete Account
       </LogoutButton>
     </Container>
   );

@@ -1,6 +1,4 @@
 import { createContext, useState } from 'react';
-
-import { initializeApp } from 'firebase/app';
 import {
   initializeAuth,
   getReactNativePersistence,
@@ -9,21 +7,13 @@ import {
   onAuthStateChanged,
   signOut,
   signInWithEmailAndPassword,
+  deleteUser,
 } from 'firebase/auth';
 
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
-const firebaseConfig = {
-  apiKey: 'AIzaSyDrvn2kVVsX1B9K7LvyPffuNw_BeligVfE',
-  authDomain: 'jobsearch-rn.firebaseapp.com',
-  projectId: 'jobsearch-rn',
-  storageBucket: 'jobsearch-rn.appspot.com',
-  messagingSenderId: '317594152810',
-  appId: '1:317594152810:web:288a860dc50446f8007f13',
-};
-
-// Initialize Firebase
-export const FIREBASE_APP = initializeApp(firebaseConfig);
+import { FIREBASE_APP } from './firebase.initialization';
+import { CreateNewRecord, DeleteData } from '../firestore/firestore.service';
 
 const Firebase_Initial_Auth = initializeAuth(FIREBASE_APP, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage),
@@ -40,25 +30,26 @@ export const AuthenticationContext = ({ children }) => {
   onAuthStateChanged(FIREBASE_AUTH, (usr) => {
     if (usr) {
       setUser(usr);
-      setIsLoading(false);
+      // setIsLoading(false);
     } else {
       setUser(false);
-      setIsLoading(false);
+      // setIsLoading(false);
     }
   });
 
   const loginWithEmail = (email, password) => {
     setIsLoading(true);
-
-    signInWithEmailAndPassword(FIREBASE_AUTH, email, password)
-      .then((usr) => {
-        setUser(usr);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        setIsLoading(false);
-        logSetError(err, 'Login with Email');
-      });
+    setTimeout(() => {
+      signInWithEmailAndPassword(FIREBASE_AUTH, email, password)
+        .then((usr) => {
+          setUser(usr);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          setIsLoading(false);
+          logSetError(err, 'Login with Email');
+        });
+    }, 550);
   };
 
   const logoutUser = () => {
@@ -76,20 +67,39 @@ export const AuthenticationContext = ({ children }) => {
       password === null ||
       confirmPassword === null
     ) {
-      setIsLoading(false);
       setError(`Passwords Don't Match`);
+      setIsLoading(false);
       return;
     }
 
     createUserWithEmailAndPassword(FIREBASE_AUTH, email, password)
       .then((usr) => {
         setUser(usr);
+        //  Create record in db
+        const Testing = CreateNewRecord(usr.user.uid);
+        console.log(Testing);
         setIsLoading(false);
       })
       .catch((err) => {
         logSetError(err, 'Register with Email');
         setIsLoading(false);
       });
+  };
+
+  const deleteAccount = async () => {
+    const user = FIREBASE_AUTH.currentUser;
+    setIsLoading(true);
+    setTimeout(() => {
+      deleteUser(user)
+        .then(() => {
+          DeleteData(user.uid);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.log('Error while delete user', err);
+          setIsLoading(false);
+        });
+    }, 250);
   };
 
   // helper function
@@ -110,12 +120,13 @@ export const AuthenticationContext = ({ children }) => {
       value={{
         isAuthenticated: !!user,
         user,
-        isLoading,
         error,
+        isLoading,
         setError,
         loginWithEmail,
         registerWithEmail,
         logoutUser,
+        deleteAccount,
       }}
     >
       {children}
