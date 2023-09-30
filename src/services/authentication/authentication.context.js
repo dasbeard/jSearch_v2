@@ -96,16 +96,13 @@ export const AuthenticationContext = ({ children }) => {
 
         newUID = usr.user.uid;
 
-        // CreateNewRecord(usr.user.uid);
+        CreateNewRecord(usr.user.uid);
 
         // setIsLoading(false);
       })
       .then(async () => {
-        // console.log('User UID:', currentUID);
-        CreateNewRecord(usr.user.uid);
-        const params = await GetSearchParameters(currentUID);
-        setSearchParameters(params);
-        // console.log('params?', params);
+        setSearchParameters(await GetSearchParameters(newUID));
+
         setIsLoading(false);
       })
 
@@ -146,6 +143,75 @@ export const AuthenticationContext = ({ children }) => {
     console.log('Error Message:', errorMessage);
   };
 
+  const updateSearchParameters = (key, value) => {
+    switch (key) {
+      case 'remoteOnly':
+        // console.log('remote', value);
+        setSearchParameters((prevState) => ({
+          searchDates: prevState.searchDates,
+          remoteOnly: value,
+          employmentTypes: prevState.employmentTypes,
+          experienceRequirements: prevState.experienceRequirements,
+        }));
+
+        break;
+      case 'searchDates':
+        // console.log('searchDates', value);
+        setSearchParameters((prevState) => ({
+          searchDates: value,
+          remoteOnly: prevState.remoteOnly,
+          employmentTypes: prevState.employmentTypes,
+          experienceRequirements: prevState.experienceRequirements,
+        }));
+        break;
+      case 'employmentTypes':
+        // console.log('EmpType', value);
+
+        let newEmploymentTypes = searchParameters.employmentTypes;
+
+        if (!newEmploymentTypes.length) {
+          newEmploymentTypes = [value];
+        } else if (newEmploymentTypes.includes(value)) {
+          newEmploymentTypes = newEmploymentTypes.filter(
+            (item) => item !== value
+          );
+        } else {
+          newEmploymentTypes = [...newEmploymentTypes, value];
+        }
+
+        setSearchParameters((prevState) => ({
+          searchDates: prevState.searchDates,
+          remoteOnly: prevState.remoteOnly,
+          employmentTypes: newEmploymentTypes,
+          experienceRequirements: prevState.experienceRequirements,
+        }));
+        break;
+      case 'experienceRequirements':
+        // console.log('experience', value);
+
+        let newRequirements = searchParameters.experienceRequirements;
+
+        if (!newRequirements.length) {
+          newRequirements = [value];
+        } else if (newRequirements.includes(value)) {
+          newRequirements = newRequirements.filter((item) => item !== value);
+        } else {
+          newRequirements = [...newRequirements, value];
+        }
+
+        setSearchParameters((prevState) => ({
+          searchDates: prevState.searchDates,
+          remoteOnly: prevState.remoteOnly,
+          employmentTypes: prevState.employmentTypes,
+          experienceRequirements: newRequirements,
+        }));
+        break;
+
+      default:
+        break;
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -161,8 +227,10 @@ export const AuthenticationContext = ({ children }) => {
         dialogVisible,
         setDialogVisible,
 
-        searchParameters,
         setSearchParameters,
+
+        searchParameters,
+        updateSearchParameters,
       }}
     >
       {children}

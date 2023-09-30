@@ -22,7 +22,7 @@ import { AuthContext } from '../../services/authentication/authentication.contex
 export const Fitler = () => {
   // const [remoteOnly, setRemoteOnly] = useState(false);
 
-  const { searchParameters } = useContext(AuthContext);
+  const { searchParameters, updateSearchParameters } = useContext(AuthContext);
 
   const { employmentTypes, experienceRequirements, remoteOnly, searchDates } =
     searchParameters;
@@ -40,10 +40,12 @@ export const Fitler = () => {
             // console.log('item', item);
             return (
               <ParameterButton
-                active={searchDates === item.value}
                 // active={'all' === item.value}
-                onPress={() => null}
+                onPress={() =>
+                  updateSearchParameters('searchDates', item.value)
+                }
                 mode='contained'
+                active={searchDates === item.value}
                 key={item + _idx}
               >
                 {item.label}
@@ -60,10 +62,12 @@ export const Fitler = () => {
         <ButtonContainer>
           {employmentTypesList.map((item, _idx) => (
             <ParameterButton
-              active={employmentTypes?.includes(item.value)}
-              onPress={() => null}
+              onPress={() =>
+                updateSearchParameters('employmentTypes', item.value)
+              }
               mode='contained'
               key={item + _idx}
+              active={employmentTypes?.includes(item.value)}
             >
               {item.label}
             </ParameterButton>
@@ -86,7 +90,9 @@ export const Fitler = () => {
           color={colors.ui.secondary}
           style={{ marginRight: 12 }}
           value={remoteOnly}
-          onValueChange={() => setRemoteOnly(!remoteOnly)}
+          onValueChange={() =>
+            updateSearchParameters('remoteOnly', !remoteOnly)
+          }
         />
       </Section>
 
@@ -97,10 +103,12 @@ export const Fitler = () => {
         <ButtonContainer>
           {jobRequirementsList.map((item, _idx) => (
             <ParameterButton
-              active={experienceRequirements?.includes(item.value)}
-              onPress={() => null}
+              onPress={() =>
+                updateSearchParameters('experienceRequirements', item.value)
+              }
               mode='contained'
               key={item + _idx}
+              active={experienceRequirements?.includes(item.value)}
             >
               {item.label}
             </ParameterButton>
