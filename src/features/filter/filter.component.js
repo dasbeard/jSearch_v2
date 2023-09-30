@@ -1,5 +1,5 @@
-import { ScrollView, View } from 'react-native';
-import { Button, Divider, Switch } from 'react-native-paper';
+import { useContext, useState } from 'react';
+import { Divider, Switch } from 'react-native-paper';
 
 import { Text } from '../../infrastructure/components/text.component';
 
@@ -9,32 +9,47 @@ import {
   Section,
   ParameterButton,
 } from './filter.styles';
+
 import {
   postedDatesList,
   employmentTypesList,
   jobRequirementsList,
 } from '../../infrastructure/search-parameters';
-import { useState } from 'react';
+
 import { colors } from '../../infrastructure/theme/colors';
+import { AuthContext } from '../../services/authentication/authentication.context';
 
 export const Fitler = () => {
-  const [remoteOnly, setRemoteOnly] = useState(false);
-  const tempList = ['FULLTIME', 'CONTRACTOR'];
+  // const [remoteOnly, setRemoteOnly] = useState(false);
+
+  const { searchParameters } = useContext(AuthContext);
+
+  const { employmentTypes, experienceRequirements, remoteOnly, searchDates } =
+    searchParameters;
+
+  // console.log('---filter.component---');
+  // console.log('searchParameters', searchParameters);
 
   return (
     <Container>
       <Section>
         <Text variant='label'>Posted Date</Text>
         <ButtonContainer>
-          {postedDatesList.map((item, _idx) => (
-            <ParameterButton
-              onPress={() => null}
-              mode='contained'
-              key={item + _idx}
-            >
-              {item.label}
-            </ParameterButton>
-          ))}
+          {postedDatesList.map((item, _idx) => {
+            // console.log('incoming searchDates value: ', searchDates);
+            // console.log('item', item);
+            return (
+              <ParameterButton
+                active={searchDates === item.value}
+                // active={'all' === item.value}
+                onPress={() => null}
+                mode='contained'
+                key={item + _idx}
+              >
+                {item.label}
+              </ParameterButton>
+            );
+          })}
         </ButtonContainer>
       </Section>
 
@@ -45,7 +60,7 @@ export const Fitler = () => {
         <ButtonContainer>
           {employmentTypesList.map((item, _idx) => (
             <ParameterButton
-              active={tempList.includes(item.value)}
+              active={employmentTypes?.includes(item.value)}
               onPress={() => null}
               mode='contained'
               key={item + _idx}
@@ -82,6 +97,7 @@ export const Fitler = () => {
         <ButtonContainer>
           {jobRequirementsList.map((item, _idx) => (
             <ParameterButton
+              active={experienceRequirements?.includes(item.value)}
               onPress={() => null}
               mode='contained'
               key={item + _idx}

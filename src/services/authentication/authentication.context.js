@@ -13,7 +13,11 @@ import {
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 import { FIREBASE_APP } from './firebase.initialization';
-import { CreateNewRecord, DeleteData } from '../firestore/firestore.service';
+import {
+  CreateNewRecord,
+  DeleteData,
+  GetSearchParameters,
+} from '../firestore/firestore.service';
 
 const Firebase_Initial_Auth = initializeAuth(FIREBASE_APP, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage),
@@ -26,23 +30,35 @@ export const AuthenticationContext = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [searchParameters, setSearchParameters] = useState();
 
   onAuthStateChanged(FIREBASE_AUTH, (usr) => {
     if (usr) {
       setUser(usr);
-      // setIsLoading(false);
     } else {
       setUser(false);
-      // setIsLoading(false);
     }
   });
 
   const loginWithEmail = (email, password) => {
     setIsLoading(true);
+
+    let currentUID;
+
     setTimeout(() => {
       signInWithEmailAndPassword(FIREBASE_AUTH, email, password)
         .then((usr) => {
           setUser(usr);
+          currentUID = usr.user.uid;
+        })
+        .then(async () => {
+          setSearchParameters(await GetSearchParameters(currentUID));
+
+          // console.log('User UID:', currentUID);
+          // const params = await GetSearchParameters(currentUID);
+          // setSearchParameters(params);
+          // console.log('params?', params);
           setIsLoading(false);
         })
         .catch((err) => {
@@ -72,14 +88,27 @@ export const AuthenticationContext = ({ children }) => {
       return;
     }
 
+    let newUID;
+
     createUserWithEmailAndPassword(FIREBASE_AUTH, email, password)
       .then((usr) => {
         setUser(usr);
-        //  Create record in db
-        const Testing = CreateNewRecord(usr.user.uid);
-        console.log(Testing);
+
+        newUID = usr.user.uid;
+
+        // CreateNewRecord(usr.user.uid);
+
+        // setIsLoading(false);
+      })
+      .then(async () => {
+        // console.log('User UID:', currentUID);
+        CreateNewRecord(usr.user.uid);
+        const params = await GetSearchParameters(currentUID);
+        setSearchParameters(params);
+        // console.log('params?', params);
         setIsLoading(false);
       })
+
       .catch((err) => {
         logSetError(err, 'Register with Email');
         setIsLoading(false);
@@ -93,10 +122,12 @@ export const AuthenticationContext = ({ children }) => {
       deleteUser(user)
         .then(() => {
           DeleteData(user.uid);
+          setDialogVisible(false);
           setIsLoading(false);
         })
         .catch((err) => {
           console.log('Error while delete user', err);
+          setDialogVisible(false);
           setIsLoading(false);
         });
     }, 250);
@@ -127,6 +158,11 @@ export const AuthenticationContext = ({ children }) => {
         registerWithEmail,
         logoutUser,
         deleteAccount,
+        dialogVisible,
+        setDialogVisible,
+
+        searchParameters,
+        setSearchParameters,
       }}
     >
       {children}

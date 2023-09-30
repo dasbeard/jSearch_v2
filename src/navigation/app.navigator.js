@@ -1,17 +1,30 @@
+import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { IconButton } from 'react-native-paper';
-import { View } from 'react-native';
 
 import { SafeContainer } from '../infrastructure/components/safe-area.component';
+
 import { HomeNavigation } from '../screens/home/home.navigation';
 import { SavedScreen } from '../screens/saved/saved.screen';
 import { UserAccount } from '../screens/account/users-account.screen';
 
 import { colors } from '../infrastructure/theme/colors';
+import { useContext } from 'react';
+import { AuthContext } from '../services/authentication/authentication.context';
 
 const Tab = createBottomTabNavigator();
 
 export const AppNavigator = () => {
+  const { dialogVisible, setDialogVisible } = useContext(AuthContext);
+
+  screenListener = {
+    focus: () => {
+      if (dialogVisible) {
+        setDialogVisible(false);
+      }
+    },
+  };
+
   return (
     <SafeContainer>
       <Tab.Navigator
@@ -42,8 +55,16 @@ export const AppNavigator = () => {
           // tabBarActiveBackgroundColor: 'red',
         })}
       >
-        <Tab.Screen name='Home' component={HomeNavigation} />
-        <Tab.Screen name='Saved' component={SavedScreen} />
+        <Tab.Screen
+          name='Home'
+          component={HomeNavigation}
+          listeners={screenListener}
+        />
+        <Tab.Screen
+          name='Saved'
+          component={SavedScreen}
+          listeners={screenListener}
+        />
         <Tab.Screen name='Account' component={UserAccount} />
       </Tab.Navigator>
       <View

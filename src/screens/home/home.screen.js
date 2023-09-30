@@ -1,13 +1,10 @@
+import { Fragment } from 'react';
 import { FlatList, Text, View } from 'react-native';
-import { ImageBackground } from 'react-native';
 
 import { Search } from '../../features/search/search.component';
-
-import BG from '../../../assets/bg-image.jpg';
+import { JobCard } from '../../features/job-card/job-card.component';
 
 import * as tempSearchData from '../../../testSearchData.json';
-import { JobCard } from '../../features/job-card/job-card.component';
-import { Fragment } from 'react';
 
 const data = tempSearchData.data;
 

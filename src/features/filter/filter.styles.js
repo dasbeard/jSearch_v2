@@ -22,8 +22,8 @@ export const ButtonContainer = styled(ScrollView).attrs({
 `;
 
 export const ParameterButton = styled(Button).attrs((props) => ({
-  buttonColor: props.active ? colors.ui.primary : colors.ui.muted,
-  textColor: !props.active ? colors.text.primary : colors.text.inverse,
+  buttonColor: props.active ? colors.ui.secondary : colors.ui.muted,
+  textColor: colors.text.primary,
 }))`
   margin: 0 3px;
 `;

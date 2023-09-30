@@ -21,7 +21,6 @@ export const HomeNavigation = () => {
       <Stack.Group
         screenOptions={{
           headerTitleAlign: 'center',
-
           headerShown: true,
           presentation: 'modal',
         }}
