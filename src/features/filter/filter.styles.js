@@ -1,7 +1,7 @@
 import styled from 'styled-components/native';
 import { colors } from '../../infrastructure/theme/colors';
 import { ScrollView } from 'react-native';
-import { Button } from 'react-native-paper';
+import { Button, TextInput } from 'react-native-paper';
 
 export const Container = styled.View`
   flex: 1;
@@ -19,6 +19,12 @@ export const ButtonContainer = styled(ScrollView).attrs({
   contentInset: { left: 8, right: 8 },
 })`
   margin: 9px 0;
+`;
+
+export const LocationInput = styled(TextInput)`
+  margin: 9px 0;
+  align-self: center;
+  width: 95%;
 `;
 
 export const ParameterButton = styled(Button).attrs((props) => ({

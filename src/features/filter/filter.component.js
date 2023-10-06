@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { Divider, Switch } from 'react-native-paper';
+import { Divider, Switch, TextInput } from 'react-native-paper';
 
 import { Text } from '../../infrastructure/components/text.component';
 
@@ -8,6 +8,7 @@ import {
   Container,
   Section,
   ParameterButton,
+  LocationInput,
 } from './filter.styles';
 
 import {
@@ -17,33 +18,50 @@ import {
 } from '../../infrastructure/search-parameters';
 
 import { colors } from '../../infrastructure/theme/colors';
+import { FSContext } from '../../services/firestore/firestore.context';
 import { AuthContext } from '../../services/authentication/authentication.context';
 
 export const Fitler = () => {
-  // const [remoteOnly, setRemoteOnly] = useState(false);
+  const { UpdateSearchParameters, searchParameters } = useContext(FSContext);
 
-  const { searchParameters, updateSearchParameters } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
-  const { employmentTypes, experienceRequirements, remoteOnly, searchDates } =
-    searchParameters;
+  const {
+    location,
+    employmentTypes,
+    experienceRequirements,
+    remoteOnly,
+    searchDates,
+  } = searchParameters;
 
-  // console.log('---filter.component---');
-  // console.log('searchParameters', searchParameters);
+  console.log('---filter.component---');
+  console.log('searchParameters', searchParameters);
+
+  const handleUpdateParameter = (parameter, value) => {
+    if (parameter === 'location') {
+      //  Set State???
+    }
+    UpdateSearchParameters(parameter, value, user.uid);
+  };
 
   return (
     <Container>
       <Section>
+        <Text variant='label'>Location</Text>
+        <LocationInput
+          label='location'
+          value={location}
+          onChangeText={(text) => handleUpdateParameter('location', text)}
+        />
+      </Section>
+      <Section>
         <Text variant='label'>Posted Date</Text>
         <ButtonContainer>
           {postedDatesList.map((item, _idx) => {
-            // console.log('incoming searchDates value: ', searchDates);
-            // console.log('item', item);
             return (
               <ParameterButton
                 // active={'all' === item.value}
-                onPress={() =>
-                  updateSearchParameters('searchDates', item.value)
-                }
+                onPress={() => handleUpdateParameter('searchDates', item.value)}
                 mode='contained'
                 active={searchDates === item.value}
                 key={item + _idx}
@@ -63,7 +81,7 @@ export const Fitler = () => {
           {employmentTypesList.map((item, _idx) => (
             <ParameterButton
               onPress={() =>
-                updateSearchParameters('employmentTypes', item.value)
+                handleUpdateParameter('employmentTypes', item.value)
               }
               mode='contained'
               key={item + _idx}
@@ -90,9 +108,7 @@ export const Fitler = () => {
           color={colors.ui.secondary}
           style={{ marginRight: 12 }}
           value={remoteOnly}
-          onValueChange={() =>
-            updateSearchParameters('remoteOnly', !remoteOnly)
-          }
+          onValueChange={() => handleUpdateParameter('remoteOnly', !remoteOnly)}
         />
       </Section>
 
@@ -104,7 +120,7 @@ export const Fitler = () => {
           {jobRequirementsList.map((item, _idx) => (
             <ParameterButton
               onPress={() =>
-                updateSearchParameters('experienceRequirements', item.value)
+                handleUpdateParameter('experienceRequirements', item.value)
               }
               mode='contained'
               key={item + _idx}
@@ -118,10 +134,3 @@ export const Fitler = () => {
     </Container>
   );
 };
-
-// <ScrollView
-// horizontal
-// contentInset={{ left: 10, right: 10 }}
-// centerContent
-// showsHorizontalScrollIndicator={false}
-// >

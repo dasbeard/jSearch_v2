@@ -9,13 +9,21 @@ import { SavedScreen } from '../screens/saved/saved.screen';
 import { UserAccount } from '../screens/account/users-account.screen';
 
 import { colors } from '../infrastructure/theme/colors';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { AuthContext } from '../services/authentication/authentication.context';
+import { FSContext } from '../services/firestore/firestore.context';
 
 const Tab = createBottomTabNavigator();
 
 export const AppNavigator = () => {
-  const { dialogVisible, setDialogVisible } = useContext(AuthContext);
+  const { dialogVisible, setDialogVisible, user } = useContext(AuthContext);
+
+  const { GetSearchParameters, GetSearchQuery } = useContext(FSContext);
+
+  useEffect(() => {
+    GetSearchParameters(user.uid);
+    GetSearchQuery(user.uid);
+  }, []);
 
   screenListener = {
     focus: () => {
@@ -52,7 +60,6 @@ export const AppNavigator = () => {
           },
           tabBarActiveTintColor: colors.ui.secondary,
           tabBarInactiveTintColor: colors.ui.muted,
-          // tabBarActiveBackgroundColor: 'red',
         })}
       >
         <Tab.Screen

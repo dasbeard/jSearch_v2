@@ -7,10 +7,11 @@ import { LoginNavigator } from './login.navigator';
 import { AppNavigator } from './app.navigator';
 
 import { AuthContext } from '../services/authentication/authentication.context';
+import { FireStoreContext } from '../services/firestore/firestore.context';
 
-import { ImageBackground } from 'react-native';
+// import { ImageBackground } from 'react-native';
 
-import BG from '../../assets/header2.jpg';
+// import BG from '../../assets/header2.jpg';
 
 const MyTheme = {
   ...DefaultTheme,
@@ -33,7 +34,13 @@ export const EntryNavigation = () => {
 
   return (
     <NavigationContainer theme={MyTheme}>
-      {isAuthenticated ? <AppNavigator /> : <LoginNavigator />}
+      {isAuthenticated ? (
+        <FireStoreContext>
+          <AppNavigator />
+        </FireStoreContext>
+      ) : (
+        <LoginNavigator />
+      )}
     </NavigationContainer>
   );
 };
