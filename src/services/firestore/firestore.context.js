@@ -13,6 +13,7 @@ import {
   Timestamp,
   updateDoc,
 } from 'firebase/firestore';
+import { async } from '@firebase/util';
 
 export const FIREBASE_DB = getFirestore(FIREBASE_APP);
 
@@ -96,10 +97,45 @@ export const FireStoreContext = ({ children }) => {
     setSearchModified(false);
   };
 
-  const UpdateSearchQuery = async (uid) => {
+  const UpdateSearchQuery = (uid) => {
     const docRef = doc(FIREBASE_DB, 'users', uid);
 
-    await setDoc(docRef, { searchValue: currentQuery }, { merge: true });
+    setDoc(docRef, { searchValue: currentQuery }, { merge: true });
+  };
+
+  const SavePost = (uid, postData) => {
+    console.log('-- Firestore.Context -- SavePost --');
+    // console.log('postData: ', postData);
+
+    const docRef = doc(
+      FIREBASE_DB,
+      'users',
+      uid,
+      'savedPosts',
+      postData.job_id
+    );
+
+    postData = { ...postData, saved: true };
+
+    setDoc(docRef, { data: postData }, { merge: true });
+  };
+
+  const RemoveSavedPost = async (uid, postData) => {
+    console.log('-- Firestore.Context -- RemoveSavePost --');
+
+    const docRef = doc(
+      FIREBASE_DB,
+      'users',
+      uid,
+      'savedPosts',
+      postData.job_id
+    );
+
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      await deleteDoc(docRef);
+    }
   };
 
   return (
@@ -109,6 +145,9 @@ export const FireStoreContext = ({ children }) => {
         UpdateSearchParameters,
         UpdateSearchQuery,
         GetSearchValue,
+        SavePost,
+        RemoveSavedPost,
+
         searchParameters,
         currentQuery,
         setCurrentQuery,

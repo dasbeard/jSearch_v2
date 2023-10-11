@@ -10,7 +10,7 @@ import { Text } from '../../infrastructure/components/text.component';
 
 import { Container, JobContainer, JobContent, Logo } from './job-card.styles';
 
-export const JobCard = ({ jobData }) => {
+export const JobCard = ({ jobData, UID, SavePost, RemoveSavedPost }) => {
   const navigation = useNavigation();
   const [saved, setSaved] = useState(jobData.saved);
   const [applied, setApplied] = useState(jobData.applied);
@@ -19,6 +19,21 @@ export const JobCard = ({ jobData }) => {
     jobData.employer_logo === null || checkImageIsSVG(jobData.employer_logo)
       ? false
       : true;
+
+  const handleSavePost = () => {
+    if (saved) {
+      // Removing Saved post
+      console.log('remove post');
+      RemoveSavedPost(UID, jobData);
+    } else {
+      // Saving post
+      console.log('save post');
+      SavePost(UID, jobData);
+    }
+
+    // Update state for UI
+    setSaved(!saved);
+  };
 
   return (
     <Container>
@@ -59,7 +74,7 @@ export const JobCard = ({ jobData }) => {
           icon={saved ? 'heart' : 'heart-outline'}
           iconColor={saved ? 'red' : '#000'}
           size={18}
-          onPress={() => setSaved(!saved)}
+          onPress={handleSavePost}
         />
         <IconButton
           icon={applied ? 'checkbox-outline' : 'square-outline'}

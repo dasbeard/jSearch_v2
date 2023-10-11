@@ -111,10 +111,9 @@ export const Fitler = () => {
       <Section>
         <Text variant='label'>Location</Text>
         <LocationInput
-          label='location'
+          // label='location'
           placeholder='Los Angeles, CA'
           value={location}
-          autoFocus={true}
           onChangeText={(loc) => handleUpdateParameter('location', loc)}
           // onSubmitEditing={() => TestFnc()}
         />
