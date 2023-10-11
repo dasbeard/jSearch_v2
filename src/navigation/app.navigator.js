@@ -18,11 +18,11 @@ const Tab = createBottomTabNavigator();
 export const AppNavigator = () => {
   const { dialogVisible, setDialogVisible, user } = useContext(AuthContext);
 
-  const { GetSearchParameters, GetSearchQuery } = useContext(FSContext);
+  const { GetSearchParameters, GetSearchValue } = useContext(FSContext);
 
   useEffect(() => {
     GetSearchParameters(user.uid);
-    GetSearchQuery(user.uid);
+    GetSearchValue(user.uid);
   }, []);
 
   screenListener = {

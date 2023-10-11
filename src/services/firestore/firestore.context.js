@@ -11,6 +11,7 @@ import {
   getDoc,
   getDocs,
   Timestamp,
+  updateDoc,
 } from 'firebase/firestore';
 
 export const FIREBASE_DB = getFirestore(FIREBASE_APP);
@@ -19,10 +20,11 @@ export const FSContext = createContext();
 
 export const FireStoreContext = ({ children }) => {
   const [searchParameters, setSearchParameters] = useState();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [currentQuery, setCurrentQuery] = useState('');
+  const [searchModified, setSearchModified] = useState(false);
 
   const GetSearchParameters = async (uid) => {
-    console.log('--Firestore.Service - GetSearchParameters--');
+    // console.log('--Firestore.Service - GetSearchParameters--');
 
     if (!uid) {
       return null;
@@ -33,7 +35,7 @@ export const FireStoreContext = ({ children }) => {
 
     if (docSnap.exists()) {
       const { searchParameters } = docSnap.data();
-      console.log('extracted data', searchParameters);
+      // console.log('extracted data', searchParameters);
       setSearchParameters(searchParameters);
     } else {
       return {
@@ -48,8 +50,10 @@ export const FireStoreContext = ({ children }) => {
     }
   };
 
-  const GetSearchQuery = async (uid) => {
-    const defaultQuery = 'React Native Developer';
+  const GetSearchValue = async (uid) => {
+    console.log('-- Firestore -- GetSearchQuery --');
+
+    const defaultQuery = 'React Developer';
 
     if (!uid) {
       return defaultQuery;
@@ -59,130 +63,43 @@ export const FireStoreContext = ({ children }) => {
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      const { query } = docSnap.data();
-      if (query) {
-        setSearchQuery(query);
+      const { searchValue } = docSnap.data();
+
+      console.log(searchValue);
+
+      if (searchValue) {
+        setCurrentQuery(searchValue);
       } else {
-        setSearchQuery(defaultQuery);
+        setCurrentQuery(defaultQuery);
+        SetDeafultSearchValue(uid, defaultQuery);
       }
     } else {
-      setSearchQuery(defaultQuery);
+      setCurrentQuery(defaultQuery);
+      SetDeafultSearchValue(uid, defaultQuery);
     }
+
+    // console.log('- FS - currentQuery:', currentQuery);
   };
 
-  const UpdateSearchParameters = (key, value, uid) => {
+  const SetDeafultSearchValue = (uid, value) => {
     const docRef = doc(FIREBASE_DB, 'users', uid);
 
-    switch (key) {
-      case 'location':
-        setSearchParameters((prevState) => ({
-          location: value,
-          searchDates: prevState.searchDates,
-          remoteOnly: prevState.remoteOnly,
-          employmentTypes: prevState.employmentTypes,
-          experienceRequirements: prevState.experienceRequirements,
-        }));
-
-        setDoc(
-          docRef,
-          { searchParameters: { location: value } },
-          { merge: true }
-        );
-      case 'remoteOnly':
-        setSearchParameters((prevState) => ({
-          location: prevState.location,
-          searchDates: prevState.searchDates,
-          remoteOnly: value,
-          employmentTypes: prevState.employmentTypes,
-          experienceRequirements: prevState.experienceRequirements,
-        }));
-
-        setDoc(
-          docRef,
-          { searchParameters: { remoteOnly: value } },
-          { merge: true }
-        );
-
-        break;
-      case 'searchDates':
-        setSearchParameters((prevState) => ({
-          location: prevState.location,
-          searchDates: value,
-          remoteOnly: prevState.remoteOnly,
-          employmentTypes: prevState.employmentTypes,
-          experienceRequirements: prevState.experienceRequirements,
-        }));
-
-        setDoc(
-          docRef,
-          { searchParameters: { searchDates: value } },
-          { merge: true }
-        );
-
-        break;
-      case 'employmentTypes':
-        let newEmploymentTypes = searchParameters.employmentTypes;
-
-        if (!newEmploymentTypes.length) {
-          newEmploymentTypes = [value];
-        } else if (newEmploymentTypes.includes(value)) {
-          newEmploymentTypes = newEmploymentTypes.filter(
-            (item) => item !== value
-          );
-        } else {
-          newEmploymentTypes = [...newEmploymentTypes, value];
-        }
-
-        setSearchParameters((prevState) => ({
-          location: prevState.location,
-          searchDates: prevState.searchDates,
-          remoteOnly: prevState.remoteOnly,
-          employmentTypes: newEmploymentTypes,
-          experienceRequirements: prevState.experienceRequirements,
-        }));
-
-        setDoc(
-          docRef,
-          { searchParameters: { employmentTypes: newEmploymentTypes } },
-          { merge: true }
-        );
-
-        break;
-      case 'experienceRequirements':
-        let newRequirements = searchParameters.experienceRequirements;
-
-        if (!newRequirements.length) {
-          newRequirements = [value];
-        } else if (newRequirements.includes(value)) {
-          newRequirements = newRequirements.filter((item) => item !== value);
-        } else {
-          newRequirements = [...newRequirements, value];
-        }
-
-        setSearchParameters((prevState) => ({
-          location: prevState.location,
-          searchDates: prevState.searchDates,
-          remoteOnly: prevState.remoteOnly,
-          employmentTypes: prevState.employmentTypes,
-          experienceRequirements: newRequirements,
-        }));
-
-        setDoc(
-          docRef,
-          { searchParameters: { experienceRequirements: newRequirements } },
-          { merge: true }
-        );
-        break;
-
-      default:
-        break;
-    }
+    setDoc(docRef, { searchValue: value }, { merge: true });
   };
 
-  const UpdateSearchQuery = (value, uid) => {
+  const UpdateSearchParameters = (newParameters, uid) => {
     const docRef = doc(FIREBASE_DB, 'users', uid);
 
-    setDoc(docRef, { query: value }, { merge: true });
+    setDoc(docRef, { searchParameters: newParameters }, { merge: true });
+
+    setSearchParameters(newParameters);
+    setSearchModified(false);
+  };
+
+  const UpdateSearchQuery = async (uid) => {
+    const docRef = doc(FIREBASE_DB, 'users', uid);
+
+    await setDoc(docRef, { searchValue: currentQuery }, { merge: true });
   };
 
   return (
@@ -191,10 +108,12 @@ export const FireStoreContext = ({ children }) => {
         GetSearchParameters,
         UpdateSearchParameters,
         UpdateSearchQuery,
-        GetSearchQuery,
+        GetSearchValue,
         searchParameters,
-        searchQuery,
-        setSearchQuery,
+        currentQuery,
+        setCurrentQuery,
+        searchModified,
+        setSearchModified,
       }}
     >
       {children}
@@ -220,11 +139,11 @@ export const CreateNewRecord = async (uid) => {
   try {
     await setDoc(doc(FIREBASE_DB, 'users', uid), {
       userCreatedOn: Timestamp.now(),
-      query: 'React Native Developer',
+      searchValue: 'React Developer',
       searchParameters: {
         location: 'Los Angeles, CA',
-        employmentTypes: [''],
-        experienceRequirements: [''],
+        employmentTypes: [],
+        experienceRequirements: [],
         remoteOnly: false,
         searchDates: 'all',
       },
@@ -237,3 +156,113 @@ export const CreateNewRecord = async (uid) => {
 export const DeleteData = async (uid) => {
   await deleteDoc(doc(FIREBASE_DB, 'users', uid));
 };
+
+// switch (key) {
+//   case 'location':
+//     setSearchParameters((prevState) => ({
+//       location: value,
+//       searchDates: prevState.searchDates,
+//       remoteOnly: prevState.remoteOnly,
+//       employmentTypes: prevState.employmentTypes,
+//       experienceRequirements: prevState.experienceRequirements,
+//     }));
+
+//     console.log('location', searchParameters);
+
+//     setDoc(
+//       docRef,
+//       { searchParameters: { location: value } },
+//       { merge: true }
+//     );
+
+//     break;
+//   case 'remoteOnly':
+//     setSearchParameters((prevState) => ({
+//       location: prevState.location,
+//       searchDates: prevState.searchDates,
+//       remoteOnly: value,
+//       employmentTypes: prevState.employmentTypes,
+//       experienceRequirements: prevState.experienceRequirements,
+//     }));
+
+//     console.log('remote', searchParameters);
+//     setDoc(
+//       docRef,
+//       { searchParameters: { remoteOnly: value } },
+//       { merge: true }
+//     );
+
+//     break;
+//   case 'searchDates':
+//     setSearchParameters((prevState) => ({
+//       location: prevState.location,
+//       searchDates: value,
+//       remoteOnly: prevState.remoteOnly,
+//       employmentTypes: prevState.employmentTypes,
+//       experienceRequirements: prevState.experienceRequirements,
+//     }));
+
+//     setDoc(
+//       docRef,
+//       { searchParameters: { searchDates: value } },
+//       { merge: true }
+//     );
+
+//     break;
+//   case 'employmentTypes':
+//     let newEmploymentTypes = searchParameters.employmentTypes;
+
+//     if (!newEmploymentTypes.length) {
+//       newEmploymentTypes = [value];
+//     } else if (newEmploymentTypes.includes(value)) {
+//       newEmploymentTypes = newEmploymentTypes.filter(
+//         (item) => item !== value
+//       );
+//     } else {
+//       newEmploymentTypes = [...newEmploymentTypes, value];
+//     }
+
+//     setSearchParameters((prevState) => ({
+//       location: prevState.location,
+//       searchDates: prevState.searchDates,
+//       remoteOnly: prevState.remoteOnly,
+//       employmentTypes: newEmploymentTypes,
+//       experienceRequirements: prevState.experienceRequirements,
+//     }));
+
+//     setDoc(
+//       docRef,
+//       { searchParameters: { employmentTypes: newEmploymentTypes } },
+//       { merge: true }
+//     );
+
+//     break;
+//   case 'experienceRequirements':
+//     let newRequirements = searchParameters.experienceRequirements;
+
+//     if (!newRequirements.length) {
+//       newRequirements = [value];
+//     } else if (newRequirements.includes(value)) {
+//       newRequirements = newRequirements.filter((item) => item !== value);
+//     } else {
+//       newRequirements = [...newRequirements, value];
+//     }
+
+//     setSearchParameters((prevState) => ({
+//       location: prevState.location,
+//       searchDates: prevState.searchDates,
+//       remoteOnly: prevState.remoteOnly,
+//       employmentTypes: prevState.employmentTypes,
+//       experienceRequirements: newRequirements,
+//     }));
+
+//     setDoc(
+//       docRef,
+//       { searchParameters: { experienceRequirements: newRequirements } },
+//       { merge: true }
+//     );
+//     break;
+
+//   default:
+//     break;
+// }

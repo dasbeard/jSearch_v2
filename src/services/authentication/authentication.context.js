@@ -83,13 +83,9 @@ export const AuthenticationContext = ({ children }) => {
       return;
     }
 
-    let newUID;
-
     createUserWithEmailAndPassword(FIREBASE_AUTH, email, password)
       .then((usr) => {
         setUser(usr);
-
-        newUID = usr.user.uid;
 
         CreateNewRecord(usr.user.uid);
 

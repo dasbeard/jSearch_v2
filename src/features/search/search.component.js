@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { IconButton, Searchbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 
@@ -9,20 +9,26 @@ import { FSContext } from '../../services/firestore/firestore.context';
 import { AuthContext } from '../../services/authentication/authentication.context';
 
 export const Search = () => {
-  const { searchQuery, setSearchQuery, UpdateSearchQuery } =
+  const { currentQuery, setCurrentQuery, UpdateSearchQuery } =
     useContext(FSContext);
   const { user } = useContext(AuthContext);
+
+  // console.log('--- Search.Component ---');
+  // console.log('currentQuery', currentQuery);
+
+  const navigation = useNavigation();
 
   const handleSearch = () => {
     alert('Search!');
   };
 
-  const handleInputChange = (input) => {
-    setSearchQuery(input);
-    UpdateSearchQuery(input, user.uid);
+  const handleSearchSubmit = () => {
+    UpdateSearchQuery(user.uid);
   };
 
-  const navigation = useNavigation();
+  const handleOnChange = (newSearch) => {
+    setCurrentQuery(newSearch);
+  };
 
   return (
     <Container>
@@ -30,9 +36,10 @@ export const Search = () => {
         style={{ width: '90%' }}
         inputStyle={{ fontSize: 14 }}
         onIconPress={handleSearch}
-        value={searchQuery}
+        value={currentQuery}
         elevation={1}
-        onChangeText={(text) => handleInputChange(text)}
+        onChangeText={(text) => handleOnChange(text)}
+        onSubmitEditing={() => handleSearchSubmit()}
       />
       <IconButton
         icon='filter'

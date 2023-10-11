@@ -1,7 +1,9 @@
 import { useContext, useState } from 'react';
-import { Divider, Switch, TextInput } from 'react-native-paper';
+import { Divider, Switch } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 
 import { Text } from '../../infrastructure/components/text.component';
+import { Spacer } from '../../infrastructure/components/spacer.component';
 
 import {
   ButtonContainer,
@@ -9,6 +11,7 @@ import {
   Section,
   ParameterButton,
   LocationInput,
+  SearchButton,
 } from './filter.styles';
 
 import {
@@ -22,26 +25,85 @@ import { FSContext } from '../../services/firestore/firestore.context';
 import { AuthContext } from '../../services/authentication/authentication.context';
 
 export const Fitler = () => {
-  const { UpdateSearchParameters, searchParameters } = useContext(FSContext);
-
+  const navigation = useNavigation();
   const { user } = useContext(AuthContext);
 
   const {
-    location,
-    employmentTypes,
-    experienceRequirements,
-    remoteOnly,
-    searchDates,
-  } = searchParameters;
+    UpdateSearchParameters,
+    searchParameters,
+    searchModified,
+    setSearchModified,
+  } = useContext(FSContext);
 
-  console.log('---filter.component---');
-  console.log('searchParameters', searchParameters);
+  // const [updateSearch, setUpdateSearch] = useState(false);
+  const [location, setLocation] = useState(searchParameters.location);
+  const [employmentTypes, setEmploymentTypes] = useState(
+    searchParameters.employmentTypes
+  );
+  const [experienceRequirements, setExperienceRequirements] = useState(
+    searchParameters.experienceRequirements
+  );
+  const [remoteOnly, setRemoteOnly] = useState(searchParameters.remoteOnly);
+  const [searchDates, setSearchDates] = useState(searchParameters.searchDates);
 
   const handleUpdateParameter = (parameter, value) => {
-    if (parameter === 'location') {
-      //  Set State???
+    setSearchModified(true);
+
+    switch (parameter) {
+      case 'location':
+        setLocation(value);
+        break;
+      case 'remoteOnly':
+        setRemoteOnly(value);
+        break;
+      case 'searchDates':
+        setSearchDates(value);
+        break;
+      case 'employmentTypes':
+        let newEmploymentTypes = employmentTypes;
+
+        if (!newEmploymentTypes.length) {
+          newEmploymentTypes = [value];
+        } else if (newEmploymentTypes.includes(value)) {
+          newEmploymentTypes = newEmploymentTypes.filter(
+            (item) => item !== value
+          );
+        } else {
+          newEmploymentTypes = [...newEmploymentTypes, value];
+        }
+        setEmploymentTypes(newEmploymentTypes);
+
+        break;
+      case 'experienceRequirements':
+        let newRequirements = experienceRequirements;
+
+        if (!newRequirements.length) {
+          newRequirements = [`${value}`];
+        } else if (newRequirements.includes(value)) {
+          newRequirements = newRequirements.filter((item) => item !== value);
+        } else {
+          newRequirements = [...newRequirements, value];
+        }
+
+        setExperienceRequirements(newRequirements);
+
+        break;
+      default:
+        break;
     }
-    UpdateSearchParameters(parameter, value, user.uid);
+  };
+
+  const handleSaveParameters = () => {
+    const currentParams = {
+      location,
+      remoteOnly,
+      searchDates,
+      employmentTypes,
+      experienceRequirements,
+    };
+
+    UpdateSearchParameters(currentParams, user.uid);
+    navigation.goBack();
   };
 
   return (
@@ -50,8 +112,11 @@ export const Fitler = () => {
         <Text variant='label'>Location</Text>
         <LocationInput
           label='location'
+          placeholder='Los Angeles, CA'
           value={location}
-          onChangeText={(text) => handleUpdateParameter('location', text)}
+          autoFocus={true}
+          onChangeText={(loc) => handleUpdateParameter('location', loc)}
+          // onSubmitEditing={() => TestFnc()}
         />
       </Section>
       <Section>
@@ -130,6 +195,17 @@ export const Fitler = () => {
             </ParameterButton>
           ))}
         </ButtonContainer>
+      </Section>
+      <Section>
+        <Spacer size='xl' />
+        <SearchButton
+          mode='contained'
+          uppercase
+          update={searchModified}
+          onPress={() => handleSaveParameters()}
+        >
+          Search
+        </SearchButton>
       </Section>
     </Container>
   );

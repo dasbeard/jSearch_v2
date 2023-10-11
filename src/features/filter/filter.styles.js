@@ -33,3 +33,14 @@ export const ParameterButton = styled(Button).attrs((props) => ({
 }))`
   margin: 0 3px;
 `;
+
+export const SearchButton = styled(Button).attrs((props) => ({
+  // buttonColor: props.update ? colors.ui.primary : colors.ui.disabled,
+  buttonColor: props.update ? colors.ui.primary : colors.text.disabled,
+  textColor: props.update ? colors.text.inverse : colors.text.inverse,
+}))`
+  width: 80%;
+  height: 50px;
+  align-self: center;
+  justify-content: center;
+`;
