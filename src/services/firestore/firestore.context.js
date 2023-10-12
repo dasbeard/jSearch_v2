@@ -117,7 +117,7 @@ export const FireStoreContext = ({ children }) => {
 
     postData = { ...postData, saved: true };
 
-    setDoc(docRef, { data: postData }, { merge: true });
+    setDoc(docRef, postData, { merge: true });
   };
 
   const RemoveSavedPost = async (uid, postData) => {
