@@ -9,9 +9,9 @@ import { FSContext } from '../../services/firestore/firestore.context';
 import { AuthContext } from '../../services/authentication/authentication.context';
 
 export const Search = () => {
-  const { currentQuery, setCurrentQuery, UpdateSearchQuery } =
-    useContext(FSContext);
+  const { currentQuery, UpdateSearchQuery } = useContext(FSContext);
   const { user } = useContext(AuthContext);
+  const [searchBar, setSearchBar] = useState('');
 
   // console.log('--- Search.Component ---');
   // console.log('currentQuery', currentQuery);
@@ -23,12 +23,18 @@ export const Search = () => {
   };
 
   const handleSearchSubmit = () => {
-    UpdateSearchQuery(user.uid);
+    if (searchBar.trim() !== currentQuery) {
+      UpdateSearchQuery(user.uid, searchBar);
+    }
   };
 
   const handleOnChange = (newSearch) => {
-    setCurrentQuery(newSearch);
+    setSearchBar(newSearch);
   };
+
+  useEffect(() => {
+    setSearchBar(currentQuery);
+  }, [currentQuery]);
 
   return (
     <Container>
@@ -36,7 +42,7 @@ export const Search = () => {
         style={{ width: '90%' }}
         inputStyle={{ fontSize: 14 }}
         onIconPress={handleSearch}
-        value={currentQuery}
+        value={searchBar}
         elevation={1}
         onChangeText={(text) => handleOnChange(text)}
         onSubmitEditing={() => handleSearchSubmit()}

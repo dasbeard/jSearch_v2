@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { FIREBASE_APP } from '../authentication/firebase.initialization';
 
 import {
@@ -13,7 +13,8 @@ import {
   Timestamp,
   updateDoc,
 } from 'firebase/firestore';
-import { async } from '@firebase/util';
+
+import { CallProxy } from '../search.service';
 
 export const FIREBASE_DB = getFirestore(FIREBASE_APP);
 
@@ -23,6 +24,10 @@ export const FireStoreContext = ({ children }) => {
   const [searchParameters, setSearchParameters] = useState();
   const [currentQuery, setCurrentQuery] = useState('');
   const [searchModified, setSearchModified] = useState(false);
+
+  const [searchResults, setSearchResults] = useState();
+  const [dataLoading, setDataLoading] = useState(false);
+  const [dataError, setDataError] = useState('');
 
   const GetSearchParameters = async (uid) => {
     // console.log('--Firestore.Service - GetSearchParameters--');
@@ -52,7 +57,7 @@ export const FireStoreContext = ({ children }) => {
   };
 
   const GetSearchValue = async (uid) => {
-    console.log('-- Firestore -- GetSearchQuery --');
+    // console.log('-- Firestore -- GetSearchQuery --');
 
     const defaultQuery = 'React Developer';
 
@@ -66,7 +71,7 @@ export const FireStoreContext = ({ children }) => {
     if (docSnap.exists()) {
       const { searchValue } = docSnap.data();
 
-      console.log(searchValue);
+      // console.log(searchValue);
 
       if (searchValue) {
         setCurrentQuery(searchValue);
@@ -95,12 +100,46 @@ export const FireStoreContext = ({ children }) => {
 
     setSearchParameters(newParameters);
     setSearchModified(false);
+
+    RetrieveJobPosts(currentQuery, newParameters);
   };
 
-  const UpdateSearchQuery = (uid) => {
+  const UpdateSearchQuery = async (uid, newValue) => {
+    const newQuery = newValue.trim();
+
+    setCurrentQuery(newQuery);
+
     const docRef = doc(FIREBASE_DB, 'users', uid);
 
-    setDoc(docRef, { searchValue: currentQuery }, { merge: true });
+    setDoc(docRef, { searchValue: newQuery }, { merge: true });
+
+    RetrieveJobPosts(newQuery, searchParameters);
+  };
+
+  const RetrieveJobPosts = async (searchQuery, searchParams) => {
+    setDataLoading(true);
+    console.log('--- RetrieveJobPosts ---');
+
+    let ReturnValue = await CallProxy(searchQuery, searchParams);
+    // .then((response) => {
+    console.log(' -`-`-`-`-` -`-`-`Got data back');
+    console.log(typeof ReturnValue);
+    setSearchResults(ReturnValue);
+
+    // if (response.error) {
+    //   console.log('Error with call');
+    //   setDataLoading(false);
+    //   setDataError('errorrs');
+    // } else {
+    //   // response.data
+    //   console.log('Got data back');
+    //   setSearchResults(response.data);
+    //   setDataLoading(false);
+    //   setDataError(null);
+    // }
+    // });
+    setDataError(null);
+    setDataLoading(false);
   };
 
   const SavePost = (uid, postData) => {
@@ -153,6 +192,12 @@ export const FireStoreContext = ({ children }) => {
         setCurrentQuery,
         searchModified,
         setSearchModified,
+
+        searchResults,
+        dataLoading,
+        setDataLoading,
+        dataError,
+        setDataError,
       }}
     >
       {children}

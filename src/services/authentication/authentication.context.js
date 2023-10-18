@@ -8,6 +8,8 @@ import {
   signOut,
   signInWithEmailAndPassword,
   deleteUser,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
 } from 'firebase/auth';
 
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
@@ -97,32 +99,68 @@ export const AuthenticationContext = ({ children }) => {
       });
   };
 
-  const deleteAccount = async () => {
-    const user = FIREBASE_AUTH.currentUser;
+  const deleteAccount = async (userProvidedPassword) => {
+    console.log(userProvidedPassword);
     setIsLoading(true);
-    setTimeout(() => {
-      deleteUser(user)
-        .then(() => {
-          DeleteData(user.uid);
-          setDialogVisible(false);
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          console.log('Error while delete user', err);
-          setDialogVisible(false);
-          setIsLoading(false);
-        });
-    }, 250);
+
+    const credential = EmailAuthProvider.credential(
+      FIREBASE_AUTH.currentUser.email,
+      userProvidedPassword
+    );
+
+    await reauthenticateWithCredential(FIREBASE_AUTH.currentUser, credential)
+      .then((user) => {
+        deleteUser(user)
+          .then(() => {
+            DeleteData(user.uid);
+            setDialogVisible(false);
+            setIsLoading(false);
+          })
+          .catch((err) => {
+            console.log('Error while delete user', err);
+            logSetError(err, 'Error Deleting User - Auth');
+            setDialogVisible(true);
+            setIsLoading(false);
+          });
+      })
+      .catch((err) => {
+        console.log('Passord INCORRECT', err);
+        logSetError(err, 'Error Deleting User - ReAuth');
+        setDialogVisible(true);
+        setIsLoading(false);
+      });
+
+    // const user = FIREBASE_AUTH.currentUser;
+
+    // setIsLoading(true);
+    // deleteUser(user)
+    //   .then(() => {
+    //     DeleteData(user.uid);
+    //     setDialogVisible(false);
+    //     setIsLoading(false);
+    //   })
+    //   .catch((err) => {
+    //     console.log('Error while delete user', err);
+    //     setDialogVisible(false);
+    //     setIsLoading(false);
+    //   });
   };
 
   // helper function
   const logSetError = (error, source) => {
     const errorCode = error.code;
-    const errorMessage = error.message;
+    const errorMessage = error.message.replace('Firebase: ', `\n`);
     const displayError = errorCode.replace('auth/', '');
 
-    // setError(errorCode);
-    setError(displayError);
+    if (
+      source === 'Error Deleting User - ReAuth' ||
+      source === 'Error Deleting User - Auth'
+    ) {
+      setError(`${displayError} ${errorMessage}`);
+    } else {
+      setError(displayError);
+    }
+
     console.log('Error from:', source);
     console.log('Error Code:', errorCode);
     console.log('Error Message:', errorMessage);
