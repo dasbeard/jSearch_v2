@@ -7,7 +7,7 @@ import { JobCard } from '../../features/job-card/job-card.component';
 import * as tempSearchData from '../../../testSearchData.json';
 import { AuthContext } from '../../services/authentication/authentication.context';
 import { FSContext } from '../../services/firestore/firestore.context';
-import { ActivityIndicator } from 'react-native-paper';
+import { ActivityIndicator, Button } from 'react-native-paper';
 
 const data = tempSearchData.data;
 
@@ -20,11 +20,10 @@ export const HomeScreen = () => {
     dataLoading,
     setDataLoading,
     dataError,
-    setDataError,
   } = useContext(FSContext);
 
   useEffect(() => {
-    console.log('new resuilts?');
+    console.log('--Home Screen -- useEffect ran when searchResults changed');
   }, [searchResults]);
 
   return (

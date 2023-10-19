@@ -57,15 +57,19 @@ export const JobCard = ({ jobData, UID, SavePost, RemoveSavedPost }) => {
           </JobContent>
 
           <JobContent style={{ flex: 1, alignItems: 'flex-end' }}>
-            {jobData.job_is_remote ? (
+            {jobData.job_is_remote === true ? (
               <Text variant='caption'>Remote</Text>
             ) : (
               <Text variant='caption'>On Site</Text>
             )}
 
-            <Text variant='caption'>
-              {jobData.job_city}, {jobData.job_state}
-            </Text>
+            {jobData.job_city && jobData.job_state ? (
+              <Text variant='caption' style={{ textAlign: 'right' }}>
+                {jobData.job_city}, {jobData.job_state}
+              </Text>
+            ) : (
+              <Text></Text>
+            )}
           </JobContent>
         </JobContainer>
       </TouchableOpacity>

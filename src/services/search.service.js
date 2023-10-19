@@ -1,8 +1,6 @@
 import axios from 'axios';
-export const CallProxy = async (searchTerm, searchParams) => {
-  // console.log('searchTerm:', searchTerm);
-  // console.log('searchParameters:', searchParams);
 
+export const CallProxy = async (searchTerm, searchParams) => {
   const { searchDates, remoteOnly, employmentTypes, experienceRequirements } =
     searchParams;
 
@@ -45,31 +43,28 @@ export const CallProxy = async (searchTerm, searchParams) => {
 
   const parameters = `{"searchDates":"${searchDates}"${remote}${empTypeString}${expReqString},"searchValue":"${query}"}`;
 
-  const url = `http://127.0.0.1:5001/jobsearch-rn/us-central1/getList?params=${parameters}`;
+  const baseURL =
+    // 'http://127.0.0.1:5001/jobsearch-rn/us-central1/getList?params=';
+    'https://getlist-twitpwxkva-uc.a.run.app?params=';
 
-  const Values = await GetResult(url);
-  console.log(Values);
-  console.log('Values type', typeof Values);
-  return Values;
-};
+  const url = baseURL + parameters;
+  console.log(url);
 
-// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
-// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
-// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
-// This function is ONLY returning undefined - need to fix and then append saved/applied to each obj
-
-const GetResult = async (URL) => {
-  console.log(URL);
-  let data;
-  await axios
-    .get(URL)
-    .then((response) => {
-      // console.log('********** GetResults response: ', response.data);
-      data = response.data.data;
-      return response;
-    })
-    .catch((err) => {
-      console.log('EEEEError:', err);
-      return { error: err };
-    });
+  return new Promise((resolve, reject) => {
+    axios
+      .get(url, {
+        headers: {
+          Accept: 'application/json',
+          'content-type': 'application/json',
+        },
+      })
+      .then((response) => {
+        // console.log('********** GetResults got a response');
+        return resolve(response.data.data);
+      })
+      .catch((err) => {
+        console.log('EEEEError:', err);
+        return reject({ error: err });
+      });
+  });
 };

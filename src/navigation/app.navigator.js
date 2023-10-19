@@ -1,3 +1,4 @@
+import { useContext, useEffect } from 'react';
 import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { IconButton } from 'react-native-paper';
@@ -8,8 +9,9 @@ import { HomeNavigation } from '../screens/home/home.navigation';
 import { SavedScreen } from '../screens/saved/saved.screen';
 import { UserAccount } from '../screens/account/users-account.screen';
 
+import { JobDetails } from '../screens/job-details/job-details.component';
+
 import { colors } from '../infrastructure/theme/colors';
-import { useContext, useEffect } from 'react';
 import { AuthContext } from '../services/authentication/authentication.context';
 import { FSContext } from '../services/firestore/firestore.context';
 
@@ -18,11 +20,23 @@ const Tab = createBottomTabNavigator();
 export const AppNavigator = () => {
   const { dialogVisible, setDialogVisible, user } = useContext(AuthContext);
 
-  const { GetSearchParameters, GetSearchValue } = useContext(FSContext);
+  const {
+    GetSearchParameters,
+    GetSearchValue,
+    RetrieveSavedPosts,
+    RetrieveJobPosts,
+    searchParameters,
+    currentQuery,
+  } = useContext(FSContext);
 
   useEffect(() => {
     GetSearchParameters(user.uid);
     GetSearchValue(user.uid);
+    // Retrieve list of saved/applied posts
+    RetrieveSavedPosts(user.uid);
+
+    // Retrieve current posts
+    // RetrieveJobPosts(currentQuery, searchParameters);
   }, []);
 
   screenListener = {
@@ -60,6 +74,7 @@ export const AppNavigator = () => {
           },
           tabBarActiveTintColor: colors.ui.secondary,
           tabBarInactiveTintColor: colors.ui.muted,
+          tabBarHideOnKeyboard: true,
         })}
       >
         <Tab.Screen
@@ -74,6 +89,7 @@ export const AppNavigator = () => {
         />
         <Tab.Screen name='Account' component={UserAccount} />
       </Tab.Navigator>
+
       <View
         // this is for ios to cover the bottom tab navigator color
         style={{

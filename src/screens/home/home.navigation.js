@@ -35,10 +35,10 @@ export const HomeNavigation = () => {
         <Stack.Screen
           name='Details'
           component={JobDetails}
-          options={({ route }) => ({
-            // title: route.params.jobDetails.job_title,
+          options={{
             title: 'Job Details',
-          })}
+            gestureEnabled: true,
+          }}
         />
       </Stack.Group>
     </Stack.Navigator>

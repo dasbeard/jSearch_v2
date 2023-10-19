@@ -99,6 +99,7 @@ export const AuthenticationContext = ({ children }) => {
       });
   };
 
+  // Still need to delete subCollections
   const deleteAccount = async (userProvidedPassword) => {
     console.log(userProvidedPassword);
     setIsLoading(true);

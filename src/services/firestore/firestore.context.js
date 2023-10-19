@@ -3,15 +3,13 @@ import { FIREBASE_APP } from '../authentication/firebase.initialization';
 
 import {
   getFirestore,
-  collection,
-  addDoc,
   setDoc,
   doc,
   deleteDoc,
   getDoc,
-  getDocs,
   Timestamp,
-  updateDoc,
+  collection,
+  getDocs,
 } from 'firebase/firestore';
 
 import { CallProxy } from '../search.service';
@@ -24,10 +22,11 @@ export const FireStoreContext = ({ children }) => {
   const [searchParameters, setSearchParameters] = useState();
   const [currentQuery, setCurrentQuery] = useState('');
   const [searchModified, setSearchModified] = useState(false);
-
   const [searchResults, setSearchResults] = useState();
   const [dataLoading, setDataLoading] = useState(false);
   const [dataError, setDataError] = useState('');
+  const [savedPosts, setSavedPosts] = useState([]);
+  const [savedPostsIDs, setSavedPostsIDs] = useState([]);
 
   const GetSearchParameters = async (uid) => {
     // console.log('--Firestore.Service - GetSearchParameters--');
@@ -121,23 +120,11 @@ export const FireStoreContext = ({ children }) => {
     console.log('--- RetrieveJobPosts ---');
 
     let ReturnValue = await CallProxy(searchQuery, searchParams);
-    // .then((response) => {
-    console.log(' -`-`-`-`-` -`-`-`Got data back');
-    console.log(typeof ReturnValue);
+
+    console.log(savedPostsIDs);
+
     setSearchResults(ReturnValue);
 
-    // if (response.error) {
-    //   console.log('Error with call');
-    //   setDataLoading(false);
-    //   setDataError('errorrs');
-    // } else {
-    //   // response.data
-    //   console.log('Got data back');
-    //   setSearchResults(response.data);
-    //   setDataLoading(false);
-    //   setDataError(null);
-    // }
-    // });
     setDataError(null);
     setDataLoading(false);
   };
@@ -177,6 +164,33 @@ export const FireStoreContext = ({ children }) => {
     }
   };
 
+  const RetrieveSavedPosts = async (uid) => {
+    console.log('**** RetrieveSavedPosts');
+    const querySnapshot = await getDocs(
+      collection(FIREBASE_DB, 'users', uid, 'savedPosts')
+    );
+
+    let posts = [];
+    let postIDs = [];
+
+    if (querySnapshot) {
+      querySnapshot.forEach((doc) => {
+        // doc.data()
+        postIDs.push(doc.id);
+        posts.push(doc.data());
+        // console.log(doc.id);
+      });
+    } else {
+      console.log('no saved posts');
+    }
+
+    // console.log(posts);z
+
+    //  To Be Refactored
+    setSavedPosts(posts);
+    setSavedPostsIDs(postIDs);
+  };
+
   return (
     <FSContext.Provider
       value={{
@@ -186,6 +200,8 @@ export const FireStoreContext = ({ children }) => {
         GetSearchValue,
         SavePost,
         RemoveSavedPost,
+        RetrieveSavedPosts,
+        RetrieveJobPosts,
 
         searchParameters,
         currentQuery,
@@ -198,6 +214,9 @@ export const FireStoreContext = ({ children }) => {
         setDataLoading,
         dataError,
         setDataError,
+
+        savedPosts,
+        savedPostsIDs,
       }}
     >
       {children}
