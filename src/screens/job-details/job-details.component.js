@@ -14,6 +14,10 @@ export const JobDetails = ({ route }) => {
   const { jobDetails } = route.params;
   const [activeTab, setActiveTab] = useState('About');
 
+  const city = jobDetails.job_city ? jobDetails.job_city : '';
+  const state = jobDetails.job_state ? jobDetails.job_state : '';
+  const location = city && state ? `${city}, ${state}` : `${city}${state}`;
+
   return (
     <Container
       style={{
@@ -25,7 +29,7 @@ export const JobDetails = ({ route }) => {
           logo={jobDetails.employer_logo}
           jobTitle={jobDetails.job_title}
           companyName={jobDetails.employer_name}
-          loctaion={`${jobDetails.job_city}, ${jobDetails.job_state}`}
+          location={location}
         />
       </Surface>
 

@@ -4,12 +4,12 @@ import { FlatList, Text, View } from 'react-native';
 import { Search } from '../../features/search/search.component';
 import { JobCard } from '../../features/job-card/job-card.component';
 
-import * as tempSearchData from '../../../testSearchData.json';
 import { AuthContext } from '../../services/authentication/authentication.context';
 import { FSContext } from '../../services/firestore/firestore.context';
 import { ActivityIndicator, Button } from 'react-native-paper';
 
-const data = tempSearchData.data;
+// import * as tempSearchData from '../../../testSearchData.json';
+// const data = tempSearchData.data;
 
 export const HomeScreen = () => {
   const { user } = useContext(AuthContext);
@@ -18,20 +18,26 @@ export const HomeScreen = () => {
     RemoveSavedPost,
     searchResults,
     dataLoading,
-    setDataLoading,
     dataError,
+    searchParameters,
+    currentQuery,
+    RetrieveJobPosts,
   } = useContext(FSContext);
 
-  useEffect(() => {
-    console.log('--Home Screen -- useEffect ran when searchResults changed');
-  }, [searchResults]);
+  // console.log('searchParameters', searchParameters);
+  // console.log('currentQuery', currentQuery);
+
+  // useEffect(() => {
+  //   console.log('--Home Screen -- useEffect ran when searchResults changed');
+  //   RetrieveJobPosts(currentQuery, searchParameters, user.uid);
+  // }, [searchResults]);
 
   return (
     <Fragment>
       <Search />
 
       {dataLoading ? (
-        <ActivityIndicator animating={true} size={62} />
+        <ActivityIndicator animating={true} size={62} style={{ top: '40%' }} />
       ) : dataError ? (
         <Text>{dataError}</Text>
       ) : (

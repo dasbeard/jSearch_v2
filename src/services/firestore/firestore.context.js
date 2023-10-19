@@ -29,7 +29,8 @@ export const FireStoreContext = ({ children }) => {
   const [savedPostsIDs, setSavedPostsIDs] = useState([]);
 
   const GetSearchParameters = async (uid) => {
-    // console.log('--Firestore.Service - GetSearchParameters--');
+    console.log('--Firestore.Service - GetSearchParameters--');
+    console.log('- FS - currentQuery:', currentQuery);
 
     if (!uid) {
       return null;
@@ -43,20 +44,23 @@ export const FireStoreContext = ({ children }) => {
       // console.log('extracted data', searchParameters);
       setSearchParameters(searchParameters);
     } else {
-      return {
+      const params = {
         searchParameters: {
           location: 'Los Angeles, CA',
-          employmentTypes: [''],
-          experienceRequirements: [''],
+          employmentTypes: [],
+          experienceRequirements: [],
           remoteOnly: false,
           searchDates: 'all',
         },
       };
+      setSearchParameters(params);
+      UpdateSearchParameters(params, uid);
     }
+    // RetrieveJobPosts(currentQuery, searchParameters, uid);
   };
 
   const GetSearchValue = async (uid) => {
-    // console.log('-- Firestore -- GetSearchQuery --');
+    console.log('-- Firestore -- GetSearchValue --');
 
     const defaultQuery = 'React Developer';
 
@@ -70,7 +74,7 @@ export const FireStoreContext = ({ children }) => {
     if (docSnap.exists()) {
       const { searchValue } = docSnap.data();
 
-      // console.log(searchValue);
+      console.log('searchValue', searchValue);
 
       if (searchValue) {
         setCurrentQuery(searchValue);
@@ -100,31 +104,62 @@ export const FireStoreContext = ({ children }) => {
     setSearchParameters(newParameters);
     setSearchModified(false);
 
-    RetrieveJobPosts(currentQuery, newParameters);
+    // RetrieveJobPosts(currentQuery, newParameters, uid);
   };
 
   const UpdateSearchQuery = async (uid, newValue) => {
     const newQuery = newValue.trim();
-
     setCurrentQuery(newQuery);
 
     const docRef = doc(FIREBASE_DB, 'users', uid);
-
     setDoc(docRef, { searchValue: newQuery }, { merge: true });
 
-    RetrieveJobPosts(newQuery, searchParameters);
+    RetrieveJobPosts(newQuery, searchParameters, uid);
   };
 
-  const RetrieveJobPosts = async (searchQuery, searchParams) => {
+  const RetrieveJobPosts = async (searchQuery, searchParams, uid) => {
+    console.log(' *~*~*~*~*~* RetreiveJobPost ~*~*~*~*');
+
     setDataLoading(true);
-    console.log('--- RetrieveJobPosts ---');
 
-    let ReturnValue = await CallProxy(searchQuery, searchParams);
+    if (!searchParameters) {
+      GetSearchParameters(uid);
+    }
 
-    console.log(savedPostsIDs);
+    await CallProxy(searchQuery, searchParams).then((ReturnValues) => {
+      console.log(' *-*-*-*-*- RetrieveJobPosts *-*-*-*-*');
+      console.log('ReturnValues', ReturnValues);
 
-    setSearchResults(ReturnValue);
+      if ((ReturnValues = false)) {
+        return;
+      }
+      if (savedPostsIDs.length > 0) {
+        MergePosts(ReturnValues);
+      } else {
+        // Get saved posts before merging
+        RetrieveSavedPosts(uid);
+        MergePosts(ReturnValues);
+      }
+    });
+  };
 
+  const MergePosts = (searchResults) => {
+    let mergedResults = [];
+
+    searchResults.forEach((post) => {
+      if (savedPostsIDs.includes(post.job_id)) {
+        post = {
+          ...post,
+          applied: post.applied ? post.applied : false,
+          saved: true,
+        };
+      } else {
+        post = { ...post, applied: false, saved: false };
+      }
+      mergedResults.push(post);
+    });
+
+    setSearchResults(mergedResults);
     setDataError(null);
     setDataLoading(false);
   };
@@ -144,10 +179,13 @@ export const FireStoreContext = ({ children }) => {
     postData = { ...postData, saved: true };
 
     setDoc(docRef, postData, { merge: true });
+
+    setSavedPostsIDs([...savedPostsIDs, postData.job_id]);
+    setSavedPosts([...savedPosts, postData]);
   };
 
   const RemoveSavedPost = async (uid, postData) => {
-    console.log('-- Firestore.Context -- RemoveSavePost --');
+    // console.log('-- Firestore.Context -- RemoveSavePost --');
 
     const docRef = doc(
       FIREBASE_DB,
@@ -166,12 +204,11 @@ export const FireStoreContext = ({ children }) => {
 
   const RetrieveSavedPosts = async (uid) => {
     console.log('**** RetrieveSavedPosts');
+    let posts = [];
+    let postIDs = [];
     const querySnapshot = await getDocs(
       collection(FIREBASE_DB, 'users', uid, 'savedPosts')
     );
-
-    let posts = [];
-    let postIDs = [];
 
     if (querySnapshot) {
       querySnapshot.forEach((doc) => {
@@ -183,8 +220,6 @@ export const FireStoreContext = ({ children }) => {
     } else {
       console.log('no saved posts');
     }
-
-    // console.log(posts);z
 
     //  To Be Refactored
     setSavedPosts(posts);
@@ -224,18 +259,6 @@ export const FireStoreContext = ({ children }) => {
   );
 };
 
-// Not Tested
-// export const GetSavedPosts = async (uid) => {
-//   // Not Tested
-
-//   const collectionRef = collection(FIREBASE_DB, 'users', uid, 'savedPosts');
-//   const savedPosts = await getDocs(collectionRef);
-
-//   savedPosts.forEach((doc) => {
-//     console.log(doc.id, ' => ', doc.data());
-//   });
-// };
-
 export const CreateNewRecord = async (uid) => {
   console.log('UID Passed in to CreateNewRecord - firesStore.Service', uid);
 
@@ -259,113 +282,3 @@ export const CreateNewRecord = async (uid) => {
 export const DeleteData = async (uid) => {
   await deleteDoc(doc(FIREBASE_DB, 'users', uid));
 };
-
-// switch (key) {
-//   case 'location':
-//     setSearchParameters((prevState) => ({
-//       location: value,
-//       searchDates: prevState.searchDates,
-//       remoteOnly: prevState.remoteOnly,
-//       employmentTypes: prevState.employmentTypes,
-//       experienceRequirements: prevState.experienceRequirements,
-//     }));
-
-//     console.log('location', searchParameters);
-
-//     setDoc(
-//       docRef,
-//       { searchParameters: { location: value } },
-//       { merge: true }
-//     );
-
-//     break;
-//   case 'remoteOnly':
-//     setSearchParameters((prevState) => ({
-//       location: prevState.location,
-//       searchDates: prevState.searchDates,
-//       remoteOnly: value,
-//       employmentTypes: prevState.employmentTypes,
-//       experienceRequirements: prevState.experienceRequirements,
-//     }));
-
-//     console.log('remote', searchParameters);
-//     setDoc(
-//       docRef,
-//       { searchParameters: { remoteOnly: value } },
-//       { merge: true }
-//     );
-
-//     break;
-//   case 'searchDates':
-//     setSearchParameters((prevState) => ({
-//       location: prevState.location,
-//       searchDates: value,
-//       remoteOnly: prevState.remoteOnly,
-//       employmentTypes: prevState.employmentTypes,
-//       experienceRequirements: prevState.experienceRequirements,
-//     }));
-
-//     setDoc(
-//       docRef,
-//       { searchParameters: { searchDates: value } },
-//       { merge: true }
-//     );
-
-//     break;
-//   case 'employmentTypes':
-//     let newEmploymentTypes = searchParameters.employmentTypes;
-
-//     if (!newEmploymentTypes.length) {
-//       newEmploymentTypes = [value];
-//     } else if (newEmploymentTypes.includes(value)) {
-//       newEmploymentTypes = newEmploymentTypes.filter(
-//         (item) => item !== value
-//       );
-//     } else {
-//       newEmploymentTypes = [...newEmploymentTypes, value];
-//     }
-
-//     setSearchParameters((prevState) => ({
-//       location: prevState.location,
-//       searchDates: prevState.searchDates,
-//       remoteOnly: prevState.remoteOnly,
-//       employmentTypes: newEmploymentTypes,
-//       experienceRequirements: prevState.experienceRequirements,
-//     }));
-
-//     setDoc(
-//       docRef,
-//       { searchParameters: { employmentTypes: newEmploymentTypes } },
-//       { merge: true }
-//     );
-
-//     break;
-//   case 'experienceRequirements':
-//     let newRequirements = searchParameters.experienceRequirements;
-
-//     if (!newRequirements.length) {
-//       newRequirements = [value];
-//     } else if (newRequirements.includes(value)) {
-//       newRequirements = newRequirements.filter((item) => item !== value);
-//     } else {
-//       newRequirements = [...newRequirements, value];
-//     }
-
-//     setSearchParameters((prevState) => ({
-//       location: prevState.location,
-//       searchDates: prevState.searchDates,
-//       remoteOnly: prevState.remoteOnly,
-//       employmentTypes: prevState.employmentTypes,
-//       experienceRequirements: newRequirements,
-//     }));
-
-//     setDoc(
-//       docRef,
-//       { searchParameters: { experienceRequirements: newRequirements } },
-//       { merge: true }
-//     );
-//     break;
-
-//   default:
-//     break;
-// }

@@ -13,8 +13,9 @@ import {
 } from './details-header.styles';
 import { View } from 'react-native';
 
-export const DetailsHeader = ({ logo, jobTitle, companyName, loctaion }) => {
+export const DetailsHeader = ({ logo, jobTitle, companyName, location }) => {
   const validLogo = logo === null || checkImageIsSVG(logo) ? false : true;
+  const locationDisplay = location ? location : null;
 
   return (
     <Container>
@@ -43,7 +44,7 @@ export const DetailsHeader = ({ logo, jobTitle, companyName, loctaion }) => {
 
         <LocationInfo style={{ paddingVertical: 6 }}>
           <Text variant='body'>Hybrid</Text>
-          <Text variant='body'>{loctaion}</Text>
+          <Text variant='body'>{locationDisplay}</Text>
         </LocationInfo>
       </HeaderContent>
     </Container>

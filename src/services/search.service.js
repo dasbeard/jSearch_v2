@@ -1,12 +1,22 @@
 import axios from 'axios';
 
 export const CallProxy = async (searchTerm, searchParams) => {
+  console.log(
+    '*-*-*- CallProxy *-*-* -- searchTerm/searchParams',
+    searchTerm,
+    searchParams
+  );
+
+  if (!searchTerm || !searchParams) {
+    console.log('*-*-*- CallProxy - no searchParams or searchTerm');
+    return false;
+  }
+
   const { searchDates, remoteOnly, employmentTypes, experienceRequirements } =
     searchParams;
 
   const loc = searchParams.location ? searchParams.location : 'Los Angeles, CA';
   const query = `${searchTerm} in ${loc}`;
-
   const remote = remoteOnly ? `,"remoteOnly":true` : '';
   let empTypeString = '';
   let expReqString = '';
@@ -48,7 +58,7 @@ export const CallProxy = async (searchTerm, searchParams) => {
     'https://getlist-twitpwxkva-uc.a.run.app?params=';
 
   const url = baseURL + parameters;
-  console.log(url);
+  console.log('CallProxy URL called:', url);
 
   return new Promise((resolve, reject) => {
     axios

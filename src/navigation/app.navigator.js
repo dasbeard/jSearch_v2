@@ -30,13 +30,9 @@ export const AppNavigator = () => {
   } = useContext(FSContext);
 
   useEffect(() => {
-    GetSearchParameters(user.uid);
     GetSearchValue(user.uid);
-    // Retrieve list of saved/applied posts
-    RetrieveSavedPosts(user.uid);
-
-    // Retrieve current posts
-    // RetrieveJobPosts(currentQuery, searchParameters);
+    GetSearchParameters(user.uid);
+    // RetrieveJobPosts(currentQuery, searchParameters, user.uid);
   }, []);
 
   screenListener = {
