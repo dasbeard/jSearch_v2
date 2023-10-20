@@ -39,16 +39,14 @@ export const HomeScreen = () => {
   const dataError = false;
   // const searchResults = [];
 
-  const { RetreiveJobPosts, searchResults, dataLoading, fsSearchParameters } =
-    useContext(FSContext);
-
-  // const handleGetSaved = () => {
-  //   RetrieveSavedPosts(user.uid);
-  // };
-
-  // const handleGetSettings = () => {
-  //   RetreiveSearchValues(user.uid);
-  // };
+  const {
+    RetreiveJobPosts,
+    searchResults,
+    dataLoading,
+    fsSearchParameters,
+    SavePost,
+    RemovePost,
+  } = useContext(FSContext);
 
   useEffect(() => {
     if (fsSearchParameters != null) {
@@ -73,8 +71,8 @@ export const HomeScreen = () => {
             return (
               <JobCard
                 jobData={item}
-                // SavePost={SavePost}
-                // RemoveSavedPost={RemoveSavedPost}
+                SavePost={SavePost}
+                RemovePost={RemovePost}
                 UID={user.uid}
               />
             );

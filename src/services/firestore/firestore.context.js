@@ -30,11 +30,10 @@ export const FireStoreContext = ({ children }) => {
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      // console.log('Data:', docSnap.data());
       setFsSearchParameters(docSnap.data());
     } else {
       console.log('No data');
-      // Set ERROR
+      // Set ERROR ??
       // temp params
       const tempParams = {
         searchValue: 'React Developer',
@@ -139,35 +138,30 @@ export const FireStoreContext = ({ children }) => {
     setSavedPosts([...savedPosts, postData]);
   };
 
-  // const RemovePost = async (uid, postID) => {
-  //   console.log('-- Firestore.Context -- RemovePost --');
+  const RemovePost = async (uid, postID) => {
+    console.log('-- Firestore.Context -- RemovePost --');
 
-  //   const docRef = doc(FIREBASE_DB, 'users', uid, 'savedPosts', postID);
+    console.log(postID);
 
-  //   const docSnap = await getDoc(docRef);
+    const docRef = doc(FIREBASE_DB, 'users', uid, 'savedPosts', postID);
 
-  //   if (docSnap.exists()) {
-  //     if (docSnap.data().applied) {
-  //       postData = { ...postData, saved: false };
-  //       setDoc(docRef, postData, { merge: true });
-  //     } else {
-  //       await deleteDoc(docRef);
-  //     }
-  //   }
-  //   // const removed = data.filter(object => object.items.some(item => !item.isAvailable));
-  //   // data = data.filter(item => !removed.includes(item));
-  //   let newSavedPosts = []
-  //    savedPosts.filter((post) => {
-  //     if(post.job_id != postID){
-  //       newSavedPosts.push(post)
-  //     }
-  //   });
+    const docSnap = await getDoc(docRef);
 
-  //   // Need to remove Post IDS
+    if (docSnap.exists()) {
+      if (docSnap.data().applied) {
+        postData = { ...postData, saved: false };
+        await setDoc(docRef, postData, { merge: true });
+      } else {
+        await deleteDoc(docRef);
+      }
+    }
 
-  //   setSavedPosts(newSavedPosts);
-  //   // setSavedPostsIDs([...savedPostsIDs, postData.job_id]);
-  // };
+    let newSavedPosts = savedPosts.filter((post) => post.job_id !== postID);
+    let newSavedPostsIds = savedPostsIDs.filter((id) => id !== postID);
+
+    setSavedPosts(newSavedPosts);
+    setSavedPostsIDs(newSavedPostsIds);
+  };
 
   return (
     <FSContext.Provider
@@ -177,6 +171,8 @@ export const FireStoreContext = ({ children }) => {
         UpdateSearchQuery,
         RetreiveJobPosts,
         UpdateSearchParameters,
+        RemovePost,
+        SavePost,
 
         dataLoading,
         fsSearchParameters,

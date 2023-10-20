@@ -10,7 +10,7 @@ import { Text } from '../../infrastructure/components/text.component';
 
 import { Container, JobContainer, JobContent, Logo } from './job-card.styles';
 
-export const JobCard = ({ jobData, UID, SavePost, RemoveSavedPost }) => {
+export const JobCard = ({ jobData, UID, SavePost, RemovePost }) => {
   const navigation = useNavigation();
   const [saved, setSaved] = useState(jobData.saved);
   const [applied, setApplied] = useState(jobData.applied);
@@ -24,7 +24,7 @@ export const JobCard = ({ jobData, UID, SavePost, RemoveSavedPost }) => {
     if (saved) {
       // Removing Saved post
       console.log('remove post');
-      RemoveSavedPost(UID, jobData);
+      RemovePost(UID, jobData.job_id);
     } else {
       // Saving post
       console.log('save post');

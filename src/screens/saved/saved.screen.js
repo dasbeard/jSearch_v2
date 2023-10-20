@@ -11,7 +11,7 @@ import { FSContext } from '../../services/firestore/firestore.context';
 import { AuthContext } from '../../services/authentication/authentication.context';
 
 export const SavedScreen = () => {
-  const { savedPosts, savedPostsIDs } = useContext(FSContext);
+  const { savedPosts, SavePost, RemovePost } = useContext(FSContext);
   const { user } = useContext(AuthContext);
 
   return (
@@ -23,8 +23,8 @@ export const SavedScreen = () => {
         return (
           <JobCard
             jobData={item}
-            // SavePost={SavePost}
-            // RemoveSavedPost={RemoveSavedPost}
+            SavePost={SavePost}
+            RemovePost={RemovePost}
             UID={user.uid}
           />
         );
