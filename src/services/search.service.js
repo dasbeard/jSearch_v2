@@ -1,22 +1,28 @@
 import axios from 'axios';
 
-export const CallProxy = async (searchTerm, searchParams) => {
+// export const CallProxy = async (searchTerm, searchParams) => {
+export const CallProxy = async (searchParams) => {
   console.log(
     '*-*-*- CallProxy *-*-* -- searchTerm/searchParams',
-    searchTerm,
+    // searchTerm,
     searchParams
   );
 
-  if (!searchTerm || !searchParams) {
-    console.log('*-*-*- CallProxy - no searchParams or searchTerm');
+  if (!searchParams) {
+    console.log('*-*-*- CallProxy - no searchParams ');
     return false;
   }
 
-  const { searchDates, remoteOnly, employmentTypes, experienceRequirements } =
-    searchParams;
+  const {
+    searchValue,
+    searchDates,
+    remoteOnly,
+    employmentTypes,
+    experienceRequirements,
+  } = searchParams;
 
   const loc = searchParams.location ? searchParams.location : 'Los Angeles, CA';
-  const query = `${searchTerm} in ${loc}`;
+  const query = `${searchValue} in ${loc}`;
   const remote = remoteOnly ? `,"remoteOnly":true` : '';
   let empTypeString = '';
   let expReqString = '';

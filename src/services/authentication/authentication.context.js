@@ -99,52 +99,51 @@ export const AuthenticationContext = ({ children }) => {
       });
   };
 
-  // Still need to delete subCollections
   const deleteAccount = async (userProvidedPassword) => {
-    console.log(userProvidedPassword);
-    setIsLoading(true);
-
-    const credential = EmailAuthProvider.credential(
-      FIREBASE_AUTH.currentUser.email,
-      userProvidedPassword
-    );
-
-    await reauthenticateWithCredential(FIREBASE_AUTH.currentUser, credential)
-      .then((user) => {
-        deleteUser(user)
-          .then(() => {
-            DeleteData(user.uid);
-            setDialogVisible(false);
-            setIsLoading(false);
-          })
-          .catch((err) => {
-            console.log('Error while delete user', err);
-            logSetError(err, 'Error Deleting User - Auth');
-            setDialogVisible(true);
-            setIsLoading(false);
-          });
-      })
-      .catch((err) => {
-        console.log('Passord INCORRECT', err);
-        logSetError(err, 'Error Deleting User - ReAuth');
-        setDialogVisible(true);
-        setIsLoading(false);
-      });
-
-    // const user = FIREBASE_AUTH.currentUser;
-
+    // console.log(userProvidedPassword);
     // setIsLoading(true);
-    // deleteUser(user)
-    //   .then(() => {
-    //     DeleteData(user.uid);
-    //     setDialogVisible(false);
-    //     setIsLoading(false);
+
+    // const credential = EmailAuthProvider.credential(
+    //   FIREBASE_AUTH.currentUser.email,
+    //   userProvidedPassword
+    // );
+
+    // await reauthenticateWithCredential(FIREBASE_AUTH.currentUser, credential)
+    //   .then((user) => {
+    //     deleteUser(user)
+    //       .then(() => {
+    //         DeleteData(user.uid);
+    //         setDialogVisible(false);
+    //         setIsLoading(false);
+    //       })
+    //       .catch((err) => {
+    //         console.log('Error while delete user', err);
+    //         logSetError(err, 'Error Deleting User - Auth');
+    //         setDialogVisible(true);
+    //         setIsLoading(false);
+    //       });
     //   })
     //   .catch((err) => {
-    //     console.log('Error while delete user', err);
-    //     setDialogVisible(false);
+    //     console.log('Passord INCORRECT', err);
+    //     logSetError(err, 'Error Deleting User - ReAuth');
+    //     setDialogVisible(true);
     //     setIsLoading(false);
     //   });
+
+    const user = FIREBASE_AUTH.currentUser;
+
+    setIsLoading(true);
+    deleteUser(user)
+      .then(() => {
+        DeleteData(user.uid);
+        setDialogVisible(false);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.log('Error while delete user', err);
+        setDialogVisible(false);
+        setIsLoading(false);
+      });
   };
 
   // helper function

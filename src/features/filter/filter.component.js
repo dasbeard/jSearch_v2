@@ -28,23 +28,20 @@ export const Fitler = () => {
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
 
-  const {
-    UpdateSearchParameters,
-    searchParameters,
-    searchModified,
-    setSearchModified,
-  } = useContext(FSContext);
+  const { UpdateSearchParameters, fsSearchParameters } = useContext(FSContext);
 
-  // const [updateSearch, setUpdateSearch] = useState(false);
-  const [location, setLocation] = useState(searchParameters.location);
+  const [searchModified, setSearchModified] = useState(false);
+  const [location, setLocation] = useState(fsSearchParameters.location);
   const [employmentTypes, setEmploymentTypes] = useState(
-    searchParameters.employmentTypes
+    fsSearchParameters.employmentTypes
   );
   const [experienceRequirements, setExperienceRequirements] = useState(
-    searchParameters.experienceRequirements
+    fsSearchParameters.experienceRequirements
   );
-  const [remoteOnly, setRemoteOnly] = useState(searchParameters.remoteOnly);
-  const [searchDates, setSearchDates] = useState(searchParameters.searchDates);
+  const [remoteOnly, setRemoteOnly] = useState(fsSearchParameters.remoteOnly);
+  const [searchDates, setSearchDates] = useState(
+    fsSearchParameters.searchDates
+  );
 
   const handleUpdateParameter = (parameter, value) => {
     setSearchModified(true);
@@ -102,7 +99,7 @@ export const Fitler = () => {
       experienceRequirements,
     };
 
-    UpdateSearchParameters(currentParams, user.uid);
+    UpdateSearchParameters(user.uid, currentParams);
     navigation.goBack();
   };
 
@@ -111,11 +108,9 @@ export const Fitler = () => {
       <Section>
         <Text variant='label'>Location</Text>
         <LocationInput
-          // label='location'
           placeholder='Los Angeles, CA'
           value={location}
           onChangeText={(loc) => handleUpdateParameter('location', loc)}
-          // onSubmitEditing={() => TestFnc()}
         />
       </Section>
       <Section>

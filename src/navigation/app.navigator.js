@@ -20,20 +20,27 @@ const Tab = createBottomTabNavigator();
 export const AppNavigator = () => {
   const { dialogVisible, setDialogVisible, user } = useContext(AuthContext);
 
-  const {
-    GetSearchParameters,
-    GetSearchValue,
-    RetrieveSavedPosts,
-    RetrieveJobPosts,
-    searchParameters,
-    currentQuery,
-  } = useContext(FSContext);
+  const { RetreiveSearchValues, RetrieveSavedPosts } = useContext(FSContext);
 
   useEffect(() => {
-    GetSearchValue(user.uid);
-    GetSearchParameters(user.uid);
-    // RetrieveJobPosts(currentQuery, searchParameters, user.uid);
+    RetreiveSearchValues(user.uid);
+    RetrieveSavedPosts(user.uid);
   }, []);
+
+  // const {
+  //   GetSearchParameters,
+  //   GetSearchValue,
+  //   RetrieveSavedPosts,
+  //   RetrieveJobPosts,
+  //   searchParameters,
+  //   currentQuery,
+  // } = useContext(FSContext);
+
+  // useEffect(() => {
+  //   GetSearchValue(user.uid);
+  //   GetSearchParameters(user.uid);
+  //   // RetrieveJobPosts(currentQuery, searchParameters, user.uid);
+  // }, []);
 
   screenListener = {
     focus: () => {

@@ -1,6 +1,5 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useState } from 'react';
 import { FIREBASE_APP } from '../authentication/firebase.initialization';
-
 import {
   getFirestore,
   setDoc,
@@ -11,7 +10,6 @@ import {
   collection,
   getDocs,
 } from 'firebase/firestore';
-
 import { CallProxy } from '../search.service';
 
 export const FIREBASE_DB = getFirestore(FIREBASE_APP);
@@ -19,154 +17,108 @@ export const FIREBASE_DB = getFirestore(FIREBASE_APP);
 export const FSContext = createContext();
 
 export const FireStoreContext = ({ children }) => {
-  const [searchParameters, setSearchParameters] = useState();
-  const [currentQuery, setCurrentQuery] = useState('');
-  const [searchModified, setSearchModified] = useState(false);
-  const [searchResults, setSearchResults] = useState();
+  const [fsSearchParameters, setFsSearchParameters] = useState(null);
   const [dataLoading, setDataLoading] = useState(false);
-  const [dataError, setDataError] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
   const [savedPosts, setSavedPosts] = useState([]);
   const [savedPostsIDs, setSavedPostsIDs] = useState([]);
 
-  const GetSearchParameters = async (uid) => {
-    console.log('--Firestore.Service - GetSearchParameters--');
-    console.log('- FS - currentQuery:', currentQuery);
-
-    if (!uid) {
-      return null;
-    }
+  const RetreiveSearchValues = async (uid) => {
+    console.log('*-*-*- RetreiveSettings');
 
     const docRef = doc(FIREBASE_DB, 'users', uid);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      const { searchParameters } = docSnap.data();
-      // console.log('extracted data', searchParameters);
-      setSearchParameters(searchParameters);
+      // console.log('Data:', docSnap.data());
+      setFsSearchParameters(docSnap.data());
     } else {
-      const params = {
-        searchParameters: {
-          location: 'Los Angeles, CA',
-          employmentTypes: [],
-          experienceRequirements: [],
-          remoteOnly: false,
-          searchDates: 'all',
-        },
+      console.log('No data');
+      // Set ERROR
+      // temp params
+      const tempParams = {
+        searchValue: 'React Developer',
+        location: 'Los Angeles, CA',
+        employmentTypes: [],
+        experienceRequirements: [],
+        remoteOnly: false,
+        searchDates: 'all',
       };
-      setSearchParameters(params);
-      UpdateSearchParameters(params, uid);
+      setFsSearchParameters(tempParams);
     }
-    // RetrieveJobPosts(currentQuery, searchParameters, uid);
   };
 
-  const GetSearchValue = async (uid) => {
-    console.log('-- Firestore -- GetSearchValue --');
+  const RetrieveSavedPosts = async (uid) => {
+    console.log('*-*-*- RetrieveSavedPosts');
+    const collSnapShot = await getDocs(
+      collection(FIREBASE_DB, 'users', uid, 'savedPosts')
+    );
 
-    const defaultQuery = 'React Developer';
+    let savedPosts = [];
+    let savedPostsIDs = [];
 
-    if (!uid) {
-      return defaultQuery;
-    }
-
-    const docRef = doc(FIREBASE_DB, 'users', uid);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      const { searchValue } = docSnap.data();
-
-      console.log('searchValue', searchValue);
-
-      if (searchValue) {
-        setCurrentQuery(searchValue);
-      } else {
-        setCurrentQuery(defaultQuery);
-        SetDeafultSearchValue(uid, defaultQuery);
-      }
-    } else {
-      setCurrentQuery(defaultQuery);
-      SetDeafultSearchValue(uid, defaultQuery);
-    }
-
-    // console.log('- FS - currentQuery:', currentQuery);
+    // if (collSnapShot.length > 0) {
+    collSnapShot.forEach((doc) => {
+      console.log(doc.id);
+      savedPosts.push(doc.data());
+      savedPostsIDs.push(doc.id);
+    });
+    setSavedPosts(savedPosts);
+    setSavedPostsIDs(savedPostsIDs);
+    // } else {
+    //   console.log('No Posts');
+    //   // Set ERROR ?
+    // }
   };
 
-  const SetDeafultSearchValue = (uid, value) => {
-    const docRef = doc(FIREBASE_DB, 'users', uid);
-
-    setDoc(docRef, { searchValue: value }, { merge: true });
-  };
-
-  const UpdateSearchParameters = (newParameters, uid) => {
-    const docRef = doc(FIREBASE_DB, 'users', uid);
-
-    setDoc(docRef, { searchParameters: newParameters }, { merge: true });
-
-    setSearchParameters(newParameters);
-    setSearchModified(false);
-
-    // RetrieveJobPosts(currentQuery, newParameters, uid);
-  };
-
-  const UpdateSearchQuery = async (uid, newValue) => {
-    const newQuery = newValue.trim();
-    setCurrentQuery(newQuery);
-
+  const UpdateSearchQuery = async (uid, newQuery) => {
     const docRef = doc(FIREBASE_DB, 'users', uid);
     setDoc(docRef, { searchValue: newQuery }, { merge: true });
+    let currentParams = fsSearchParameters;
+    currentParams.searchValue = newQuery;
+    setFsSearchParameters(currentParams);
 
-    RetrieveJobPosts(newQuery, searchParameters, uid);
+    RetreiveJobPosts(currentParams);
   };
 
-  const RetrieveJobPosts = async (searchQuery, searchParams, uid) => {
-    console.log(' *~*~*~*~*~* RetreiveJobPost ~*~*~*~*');
+  const UpdateSearchParameters = async (uid, newParameters) => {
+    const docRef = doc(FIREBASE_DB, 'users', uid);
 
+    setDoc(docRef, newParameters, { merge: true });
+
+    let newParams = newParameters;
+    newParams.searchValue = fsSearchParameters.searchValue;
+    setFsSearchParameters(newParams);
+
+    RetreiveJobPosts(newParams);
+  };
+
+  const RetreiveJobPosts = async (searchValues) => {
     setDataLoading(true);
 
-    if (!searchParameters) {
-      GetSearchParameters(uid);
-    }
+    CallProxy(searchValues).then((posts) => {
+      // Merge Posts with Saved Posts
+      let results = [];
+      posts.forEach((post) => {
+        if (savedPostsIDs.includes(post.job_id)) {
+          post = {
+            ...post,
+            applied: post.applied === true ? true : false,
+            saved: true,
+          };
+        } else {
+          post = { ...post, applied: false, saved: false };
+        }
+        results.push(post);
+      });
 
-    await CallProxy(searchQuery, searchParams).then((ReturnValues) => {
-      console.log(' *-*-*-*-*- RetrieveJobPosts *-*-*-*-*');
-      console.log('ReturnValues', ReturnValues);
-
-      if ((ReturnValues = false)) {
-        return;
-      }
-      if (savedPostsIDs.length > 0) {
-        MergePosts(ReturnValues);
-      } else {
-        // Get saved posts before merging
-        RetrieveSavedPosts(uid);
-        MergePosts(ReturnValues);
-      }
+      setSearchResults(results);
+      setDataLoading(false);
     });
   };
 
-  const MergePosts = (searchResults) => {
-    let mergedResults = [];
-
-    searchResults.forEach((post) => {
-      if (savedPostsIDs.includes(post.job_id)) {
-        post = {
-          ...post,
-          applied: post.applied ? post.applied : false,
-          saved: true,
-        };
-      } else {
-        post = { ...post, applied: false, saved: false };
-      }
-      mergedResults.push(post);
-    });
-
-    setSearchResults(mergedResults);
-    setDataError(null);
-    setDataLoading(false);
-  };
-
-  const SavePost = (uid, postData) => {
+  const SavePost = (uid, postData, setApplied) => {
     console.log('-- Firestore.Context -- SavePost --');
-    // console.log('postData: ', postData);
 
     const docRef = doc(
       FIREBASE_DB,
@@ -176,82 +128,60 @@ export const FireStoreContext = ({ children }) => {
       postData.job_id
     );
 
-    postData = { ...postData, saved: true };
-
+    postData = {
+      ...postData,
+      saved: true,
+      applied: setApplied ? setApplied : false,
+    };
     setDoc(docRef, postData, { merge: true });
 
     setSavedPostsIDs([...savedPostsIDs, postData.job_id]);
     setSavedPosts([...savedPosts, postData]);
   };
 
-  const RemoveSavedPost = async (uid, postData) => {
-    // console.log('-- Firestore.Context -- RemoveSavePost --');
+  // const RemovePost = async (uid, postID) => {
+  //   console.log('-- Firestore.Context -- RemovePost --');
 
-    const docRef = doc(
-      FIREBASE_DB,
-      'users',
-      uid,
-      'savedPosts',
-      postData.job_id
-    );
+  //   const docRef = doc(FIREBASE_DB, 'users', uid, 'savedPosts', postID);
 
-    const docSnap = await getDoc(docRef);
+  //   const docSnap = await getDoc(docRef);
 
-    if (docSnap.exists()) {
-      await deleteDoc(docRef);
-    }
-  };
+  //   if (docSnap.exists()) {
+  //     if (docSnap.data().applied) {
+  //       postData = { ...postData, saved: false };
+  //       setDoc(docRef, postData, { merge: true });
+  //     } else {
+  //       await deleteDoc(docRef);
+  //     }
+  //   }
+  //   // const removed = data.filter(object => object.items.some(item => !item.isAvailable));
+  //   // data = data.filter(item => !removed.includes(item));
+  //   let newSavedPosts = []
+  //    savedPosts.filter((post) => {
+  //     if(post.job_id != postID){
+  //       newSavedPosts.push(post)
+  //     }
+  //   });
 
-  const RetrieveSavedPosts = async (uid) => {
-    console.log('**** RetrieveSavedPosts');
-    let posts = [];
-    let postIDs = [];
-    const querySnapshot = await getDocs(
-      collection(FIREBASE_DB, 'users', uid, 'savedPosts')
-    );
+  //   // Need to remove Post IDS
 
-    if (querySnapshot) {
-      querySnapshot.forEach((doc) => {
-        // doc.data()
-        postIDs.push(doc.id);
-        posts.push(doc.data());
-        // console.log(doc.id);
-      });
-    } else {
-      console.log('no saved posts');
-    }
-
-    //  To Be Refactored
-    setSavedPosts(posts);
-    setSavedPostsIDs(postIDs);
-  };
+  //   setSavedPosts(newSavedPosts);
+  //   // setSavedPostsIDs([...savedPostsIDs, postData.job_id]);
+  // };
 
   return (
     <FSContext.Provider
       value={{
-        GetSearchParameters,
-        UpdateSearchParameters,
-        UpdateSearchQuery,
-        GetSearchValue,
-        SavePost,
-        RemoveSavedPost,
+        RetreiveSearchValues,
         RetrieveSavedPosts,
-        RetrieveJobPosts,
+        UpdateSearchQuery,
+        RetreiveJobPosts,
+        UpdateSearchParameters,
 
-        searchParameters,
-        currentQuery,
-        setCurrentQuery,
-        searchModified,
-        setSearchModified,
-
-        searchResults,
         dataLoading,
-        setDataLoading,
-        dataError,
-        setDataError,
-
+        fsSearchParameters,
+        searchResults,
         savedPosts,
-        savedPostsIDs,
       }}
     >
       {children}
@@ -266,19 +196,19 @@ export const CreateNewRecord = async (uid) => {
     await setDoc(doc(FIREBASE_DB, 'users', uid), {
       userCreatedOn: Timestamp.now(),
       searchValue: 'React Developer',
-      searchParameters: {
-        location: 'Los Angeles, CA',
-        employmentTypes: [],
-        experienceRequirements: [],
-        remoteOnly: false,
-        searchDates: 'all',
-      },
+      location: 'Los Angeles, CA',
+      employmentTypes: [],
+      experienceRequirements: [],
+      remoteOnly: false,
+      searchDates: 'all',
     });
   } catch (error) {
     console.log('Something went wrong', error);
   }
 };
 
-export const DeleteData = async (uid) => {
+export const DeleteUsersData = async (uid) => {
+  // Need to delete SavedPosts SubCollection
+
   await deleteDoc(doc(FIREBASE_DB, 'users', uid));
 };

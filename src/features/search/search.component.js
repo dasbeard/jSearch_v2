@@ -9,12 +9,9 @@ import { FSContext } from '../../services/firestore/firestore.context';
 import { AuthContext } from '../../services/authentication/authentication.context';
 
 export const Search = () => {
-  const { currentQuery, UpdateSearchQuery } = useContext(FSContext);
+  const { fsSearchParameters, UpdateSearchQuery } = useContext(FSContext);
   const { user } = useContext(AuthContext);
   const [searchBar, setSearchBar] = useState('');
-
-  // console.log('--- Search.Component ---');
-  // console.log('currentQuery', currentQuery);
 
   const navigation = useNavigation();
 
@@ -23,7 +20,7 @@ export const Search = () => {
   };
 
   const handleSearchSubmit = () => {
-    if (searchBar.trim() !== currentQuery) {
+    if (searchBar.trim() !== fsSearchParameters) {
       UpdateSearchQuery(user.uid, searchBar);
     }
   };
@@ -33,8 +30,10 @@ export const Search = () => {
   };
 
   useEffect(() => {
-    setSearchBar(currentQuery);
-  }, [currentQuery]);
+    if (fsSearchParameters) {
+      setSearchBar(fsSearchParameters.searchValue);
+    }
+  }, [fsSearchParameters]);
 
   return (
     <Container>

@@ -13,16 +13,18 @@ import { ActivityIndicator, Button } from 'react-native-paper';
 
 export const HomeScreen = () => {
   const { user } = useContext(AuthContext);
-  const {
-    SavePost,
-    RemoveSavedPost,
-    searchResults,
-    dataLoading,
-    dataError,
-    searchParameters,
-    currentQuery,
-    RetrieveJobPosts,
-  } = useContext(FSContext);
+  //  *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+  //  *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+  // const {
+  //   SavePost,
+  //   RemoveSavedPost,
+  //   searchResults,
+  //   dataLoading,
+  //   dataError,
+  //   searchParameters,
+  //   currentQuery,
+  //   RetrieveJobPosts,
+  // } = useContext(FSContext);
 
   // console.log('searchParameters', searchParameters);
   // console.log('currentQuery', currentQuery);
@@ -31,6 +33,28 @@ export const HomeScreen = () => {
   //   console.log('--Home Screen -- useEffect ran when searchResults changed');
   //   RetrieveJobPosts(currentQuery, searchParameters, user.uid);
   // }, [searchResults]);
+  //  *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+  //  *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+
+  const dataError = false;
+  // const searchResults = [];
+
+  const { RetreiveJobPosts, searchResults, dataLoading, fsSearchParameters } =
+    useContext(FSContext);
+
+  // const handleGetSaved = () => {
+  //   RetrieveSavedPosts(user.uid);
+  // };
+
+  // const handleGetSettings = () => {
+  //   RetreiveSearchValues(user.uid);
+  // };
+
+  useEffect(() => {
+    if (fsSearchParameters != null) {
+      RetreiveJobPosts(fsSearchParameters);
+    }
+  }, [fsSearchParameters]);
 
   return (
     <Fragment>
@@ -49,8 +73,8 @@ export const HomeScreen = () => {
             return (
               <JobCard
                 jobData={item}
-                SavePost={SavePost}
-                RemoveSavedPost={RemoveSavedPost}
+                // SavePost={SavePost}
+                // RemoveSavedPost={RemoveSavedPost}
                 UID={user.uid}
               />
             );
