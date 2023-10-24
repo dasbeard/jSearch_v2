@@ -44,15 +44,16 @@ export const HomeScreen = () => {
     searchResults,
     dataLoading,
     fsSearchParameters,
-    SavePost,
-    RemovePost,
+
+    SetAppliedStatus,
+    SetSavedStatus,
   } = useContext(FSContext);
 
-  useEffect(() => {
-    if (fsSearchParameters != null) {
-      RetreiveJobPosts(fsSearchParameters);
-    }
-  }, [fsSearchParameters]);
+  // useEffect(() => {
+  //   if (fsSearchParameters !== null) {
+  //     RetreiveJobPosts(fsSearchParameters);
+  //   }
+  // }, [fsSearchParameters]);
 
   return (
     <Fragment>
@@ -71,8 +72,8 @@ export const HomeScreen = () => {
             return (
               <JobCard
                 jobData={item}
-                SavePost={SavePost}
-                RemovePost={RemovePost}
+                SetAppliedStatus={SetAppliedStatus}
+                SetSavedStatus={SetSavedStatus}
                 UID={user.uid}
               />
             );

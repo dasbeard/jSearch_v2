@@ -2,11 +2,13 @@ import axios from 'axios';
 
 // export const CallProxy = async (searchTerm, searchParams) => {
 export const CallProxy = async (searchParams) => {
-  console.log(
-    '*-*-*- CallProxy *-*-* -- searchTerm/searchParams',
-    // searchTerm,
-    searchParams
-  );
+  // console.log(
+  //   '*-*-*- CallProxy *-*-* -- searchTerm/searchParams',
+  //   // searchTerm,
+  //   searchParams
+  // );
+
+  return;
 
   if (!searchParams) {
     console.log('*-*-*- CallProxy - no searchParams ');

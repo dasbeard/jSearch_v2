@@ -20,35 +20,28 @@ const Tab = createBottomTabNavigator();
 export const AppNavigator = () => {
   const { dialogVisible, setDialogVisible, user } = useContext(AuthContext);
 
-  const { RetreiveSearchValues, RetrieveSavedPosts } = useContext(FSContext);
+  const {
+    RetreiveSearchValues,
+    RetrieveSavedPosts,
+    updateSavedPosts,
+    RetreiveJobPosts,
+    savedPosts,
+  } = useContext(FSContext);
 
   useEffect(() => {
-    RetreiveSearchValues(user.uid);
-    RetrieveSavedPosts(user.uid);
+    //
+    //
+    RetrieveSavedPosts(user.uid).then(async (saved) => {
+      console.log('savedPosts', savedPosts);
+      await RetreiveSearchValues(user.uid).then(async (params) => {
+        console.log('got Params?', params);
+        await RetreiveJobPosts(params);
+      });
+    });
+
+    //
+    //
   }, []);
-
-  // const {
-  //   GetSearchParameters,
-  //   GetSearchValue,
-  //   RetrieveSavedPosts,
-  //   RetrieveJobPosts,
-  //   searchParameters,
-  //   currentQuery,
-  // } = useContext(FSContext);
-
-  // useEffect(() => {
-  //   GetSearchValue(user.uid);
-  //   GetSearchParameters(user.uid);
-  //   // RetrieveJobPosts(currentQuery, searchParameters, user.uid);
-  // }, []);
-
-  screenListener = {
-    focus: () => {
-      if (dialogVisible) {
-        setDialogVisible(false);
-      }
-    },
-  };
 
   return (
     <SafeContainer>
@@ -80,17 +73,30 @@ export const AppNavigator = () => {
           tabBarHideOnKeyboard: true,
         })}
       >
-        <Tab.Screen
-          name='Home'
-          component={HomeNavigation}
-          listeners={screenListener}
-        />
+        <Tab.Screen name='Home' component={HomeNavigation} />
         <Tab.Screen
           name='Saved'
           component={SavedScreen}
-          listeners={screenListener}
+          listeners={() => ({
+            blur: () => {
+              if (updateSavedPosts) {
+                RetrieveSavedPosts(user.uid);
+              }
+            },
+          })}
         />
-        <Tab.Screen name='Account' component={UserAccount} />
+        <Tab.Screen
+          name='Account'
+          component={UserAccount}
+          listeners={() => ({
+            blur: () => {
+              if (dialogVisible) {
+                // hide delete dialog when leaving account screen
+                setDialogVisible(false);
+              }
+            },
+          })}
+        />
       </Tab.Navigator>
 
       <View

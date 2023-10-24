@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { TouchableOpacity, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
@@ -10,10 +10,10 @@ import { Text } from '../../infrastructure/components/text.component';
 
 import { Container, JobContainer, JobContent, Logo } from './job-card.styles';
 
-export const JobCard = ({ jobData, UID, SavePost, RemovePost }) => {
+export const JobCard = ({ jobData, UID, SetAppliedStatus, SetSavedStatus }) => {
   const navigation = useNavigation();
-  const [saved, setSaved] = useState(jobData.saved);
-  const [applied, setApplied] = useState(jobData.applied);
+  const [saved, setSaved] = useState();
+  const [applied, setApplied] = useState();
 
   const validLogo =
     jobData.employer_logo === null || checkImageIsSVG(jobData.employer_logo)
@@ -21,19 +21,28 @@ export const JobCard = ({ jobData, UID, SavePost, RemovePost }) => {
       : true;
 
   const handleSavePost = () => {
-    if (saved) {
-      // Removing Saved post
-      console.log('remove post');
-      RemovePost(UID, jobData.job_id);
-    } else {
-      // Saving post
-      console.log('save post');
-      SavePost(UID, jobData);
-    }
-
-    // Update state for UI
+    SetSavedStatus(UID, jobData, !saved);
     setSaved(!saved);
   };
+
+  const handleApplied = () => {
+    SetAppliedStatus(UID, jobData, !applied);
+    setApplied(!applied);
+  };
+
+  useEffect(() => {
+    setApplied(jobData.applied);
+    setSaved(jobData.saved);
+  }, []);
+
+  console.log(
+    'company: ',
+    jobData.employer_name,
+    ' saved:',
+    jobData.saved,
+    ' applied:',
+    jobData.applied
+  );
 
   return (
     <Container>
@@ -84,7 +93,7 @@ export const JobCard = ({ jobData, UID, SavePost, RemovePost }) => {
           icon={applied ? 'checkbox-outline' : 'square-outline'}
           iconColor={applied ? 'green' : '#000'}
           size={18}
-          onPress={() => setApplied(!applied)}
+          onPress={handleApplied}
         />
       </View>
     </Container>

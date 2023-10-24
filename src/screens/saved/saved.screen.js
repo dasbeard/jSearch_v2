@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import { FlatList } from 'react-native';
 
 import { JobCard } from '../../features/job-card/job-card.component';
@@ -9,22 +9,29 @@ import { Container } from './saved.styles';
 
 import { FSContext } from '../../services/firestore/firestore.context';
 import { AuthContext } from '../../services/authentication/authentication.context';
+import { useFocusEffect } from '@react-navigation/native';
 
 export const SavedScreen = () => {
-  const { savedPosts, SavePost, RemovePost } = useContext(FSContext);
+  const { savedPosts, SetAppliedStatus, SetSavedStatus } =
+    useContext(FSContext);
   const { user } = useContext(AuthContext);
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     console.log('test');
+  //   }, [])
+  // );
 
   return (
     <FlatList
-      // data={data}
       data={savedPosts}
       keyExtractor={(item) => item.job_id}
       renderItem={({ item }) => {
         return (
           <JobCard
             jobData={item}
-            SavePost={SavePost}
-            RemovePost={RemovePost}
+            SetAppliedStatus={SetAppliedStatus}
+            SetSavedStatus={SetSavedStatus}
             UID={user.uid}
           />
         );
