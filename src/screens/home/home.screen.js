@@ -49,11 +49,11 @@ export const HomeScreen = () => {
     SetSavedStatus,
   } = useContext(FSContext);
 
-  // useEffect(() => {
-  //   if (fsSearchParameters !== null) {
-  //     RetreiveJobPosts(fsSearchParameters);
-  //   }
-  // }, [fsSearchParameters]);
+  useEffect(() => {
+    if (fsSearchParameters !== null) {
+      RetreiveJobPosts(fsSearchParameters);
+    }
+  }, [fsSearchParameters]);
 
   return (
     <Fragment>

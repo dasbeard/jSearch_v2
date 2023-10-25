@@ -25,22 +25,12 @@ export const AppNavigator = () => {
     RetrieveSavedPosts,
     updateSavedPosts,
     RetreiveJobPosts,
-    savedPosts,
   } = useContext(FSContext);
 
   useEffect(() => {
-    //
-    //
-    RetrieveSavedPosts(user.uid).then(async (saved) => {
-      console.log('savedPosts', savedPosts);
-      await RetreiveSearchValues(user.uid).then(async (params) => {
-        console.log('got Params?', params);
-        await RetreiveJobPosts(params);
-      });
-    });
-
-    //
-    //
+    RetrieveSavedPosts(user.uid);
+    RetreiveSearchValues(user.uid);
+    // RetreiveJobPosts();
   }, []);
 
   return (
