@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// export const CallProxy = async (searchTerm, searchParams) => {
 export const CallProxy = async (searchParams) => {
   // return;
 
@@ -23,7 +22,7 @@ export const CallProxy = async (searchParams) => {
   let empTypeString = '';
   let expReqString = '';
 
-  if (employmentTypes.length > 0) {
+  if (employmentTypes && employmentTypes.length > 0) {
     employmentTypes.forEach((type, _idx) => {
       if (type != '') {
         if (_idx > 0) {
@@ -38,7 +37,7 @@ export const CallProxy = async (searchParams) => {
     empTypeString = '';
   }
 
-  if (experienceRequirements.length > 0) {
+  if (experienceRequirements && experienceRequirements.length > 0) {
     experienceRequirements.forEach((type, _idx) => {
       if (type != '') {
         if (_idx > 0) {

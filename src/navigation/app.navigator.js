@@ -9,8 +9,6 @@ import { HomeNavigation } from '../screens/home/home.navigation';
 import { SavedScreen } from '../screens/saved/saved.screen';
 import { UserAccount } from '../screens/account/users-account.screen';
 
-import { JobDetails } from '../screens/job-details/job-details.component';
-
 import { colors } from '../infrastructure/theme/colors';
 import { AuthContext } from '../services/authentication/authentication.context';
 import { FSContext } from '../services/firestore/firestore.context';
@@ -30,7 +28,6 @@ export const AppNavigator = () => {
   useEffect(() => {
     RetrieveSavedPosts(user.uid);
     RetreiveSearchValues(user.uid);
-    // RetreiveJobPosts();
   }, []);
 
   return (

@@ -8,36 +8,9 @@ import { AuthContext } from '../../services/authentication/authentication.contex
 import { FSContext } from '../../services/firestore/firestore.context';
 import { ActivityIndicator, Button } from 'react-native-paper';
 
-// import * as tempSearchData from '../../../testSearchData.json';
-// const data = tempSearchData.data;
-
 export const HomeScreen = () => {
   const { user } = useContext(AuthContext);
-  //  *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
-  //  *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
-  // const {
-  //   SavePost,
-  //   RemoveSavedPost,
-  //   searchResults,
-  //   dataLoading,
-  //   dataError,
-  //   searchParameters,
-  //   currentQuery,
-  //   RetrieveJobPosts,
-  // } = useContext(FSContext);
-
-  // console.log('searchParameters', searchParameters);
-  // console.log('currentQuery', currentQuery);
-
-  // useEffect(() => {
-  //   console.log('--Home Screen -- useEffect ran when searchResults changed');
-  //   RetrieveJobPosts(currentQuery, searchParameters, user.uid);
-  // }, [searchResults]);
-  //  *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
-  //  *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
-
   const dataError = false;
-  // const searchResults = [];
 
   const {
     RetreiveJobPosts,

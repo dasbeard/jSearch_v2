@@ -32,3 +32,9 @@ export const JobContent = styled.View`
   justify-content: space-around;
   margin-right: 6px;
 `;
+
+export const RemoteTag = styled.View`
+  padding: 2px 5px;
+  border-radius: 15px;
+  background-color: rgba(238, 187, 2, 0.75);
+`;

@@ -8,7 +8,13 @@ import TempLogo from '../../../assets/TempLogo.jpeg';
 
 import { Text } from '../../infrastructure/components/text.component';
 
-import { Container, JobContainer, JobContent, Logo } from './job-card.styles';
+import {
+  Container,
+  JobContainer,
+  JobContent,
+  Logo,
+  RemoteTag,
+} from './job-card.styles';
 
 export const JobCard = ({ jobData, UID, SetAppliedStatus, SetSavedStatus }) => {
   const navigation = useNavigation();
@@ -35,14 +41,14 @@ export const JobCard = ({ jobData, UID, SetAppliedStatus, SetSavedStatus }) => {
     setSaved(jobData.saved);
   }, []);
 
-  console.log(
-    'company: ',
-    jobData.employer_name,
-    ' saved:',
-    jobData.saved,
-    ' applied:',
-    jobData.applied
-  );
+  // console.log(
+  //   'company: ',
+  //   jobData.employer_name,
+  //   ' saved:',
+  //   jobData.saved,
+  //   ' applied:',
+  //   jobData.applied
+  // );
 
   return (
     <Container>
@@ -65,19 +71,20 @@ export const JobCard = ({ jobData, UID, SetAppliedStatus, SetSavedStatus }) => {
             <Text variant='body'>{jobData.employer_name}</Text>
           </JobContent>
 
-          <JobContent style={{ flex: 1, alignItems: 'flex-end' }}>
+          <JobContent style={{ flex: 1.5, alignItems: 'flex-end' }}>
             {jobData.job_is_remote === true ? (
-              <Text variant='caption'>Remote</Text>
+              <RemoteTag>
+                <Text variant='caption'>Remote</Text>
+              </RemoteTag>
             ) : (
-              <Text variant='caption'>On Site</Text>
+              <Text />
             )}
-
             {jobData.job_city && jobData.job_state ? (
               <Text variant='caption' style={{ textAlign: 'right' }}>
                 {jobData.job_city}, {jobData.job_state}
               </Text>
             ) : (
-              <Text></Text>
+              <Text />
             )}
           </JobContent>
         </JobContainer>

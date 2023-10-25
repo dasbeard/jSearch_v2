@@ -92,7 +92,7 @@ export const FireStoreContext = ({ children }) => {
 
   const RetreiveJobPosts = async (searchValues, mySavedPost) => {
     console.log('*-*-*- RetreiveJobPosts');
-    console.log('savedPostsIDs', savedPostsIDs);
+    // console.log('savedPostsIDs', savedPostsIDs);
 
     setDataLoading(true);
 

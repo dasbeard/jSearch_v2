@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Platform, ScrollView, View } from 'react-native';
-import { Surface } from 'react-native-paper';
+import { Button, Surface } from 'react-native-paper';
 
 import { DetailsHeader } from '../../components/job-details/job-details-header/details-header.component';
 
@@ -8,7 +8,7 @@ import { DetailsSelector } from '../../components/job-details/details-selector/d
 import { Spacer } from '../../infrastructure/components/spacer.component';
 import { Specifics } from '../../components/job-details/specifics/specifics.component';
 
-import { Container } from './job-details.styles';
+import { Container, ApplyButton, ApplyContainer } from './job-details.styles';
 
 export const JobDetails = ({ route }) => {
   const { jobDetails } = route.params;
@@ -17,6 +17,9 @@ export const JobDetails = ({ route }) => {
   const city = jobDetails.job_city ? jobDetails.job_city : '';
   const state = jobDetails.job_state ? jobDetails.job_state : '';
   const location = city && state ? `${city}, ${state}` : `${city}${state}`;
+  const postedDate = (myDate = new Date(
+    jobDetails.job_posted_at_datetime_utc
+  ).toLocaleDateString('en-US'));
 
   return (
     <Container
@@ -30,12 +33,14 @@ export const JobDetails = ({ route }) => {
           jobTitle={jobDetails.job_title}
           companyName={jobDetails.employer_name}
           location={location}
+          isRemote={jobDetails.job_is_remote}
+          postedOn={postedDate}
         />
       </Surface>
 
       <Spacer size='md' />
 
-      <View style={{ paddingHorizontal: 6 }}>
+      <View style={{ paddingHorizontal: 6, marginBottom: 40 }}>
         <DetailsSelector activeTab={activeTab} setActiveTab={setActiveTab} />
         <Spacer size='md' />
 
@@ -71,6 +76,9 @@ export const JobDetails = ({ route }) => {
           ) : null}
         </ScrollView>
       </View>
+      <ApplyContainer>
+        <ApplyButton>Apply</ApplyButton>
+      </ApplyContainer>
     </Container>
   );
 };

@@ -39,8 +39,14 @@ export const CompanyAndTitle = styled.View`
 `;
 
 export const LocationInfo = styled.View`
-  flex: 1;
+  flex: 1.5;
   justify-content: space-between;
   align-items: flex-end;
   /* border-width: 1px; */
+`;
+
+export const RemoteTag = styled.View`
+  padding: 2px 5px;
+  border-radius: 15px;
+  background-color: rgba(238, 187, 2, 0.75);
 `;

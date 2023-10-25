@@ -1,3 +1,4 @@
+import { View } from 'react-native';
 import { Text } from '../../../infrastructure/components/text.component';
 
 import { checkImageIsSVG } from '../../../infrastructure/checkImageIsSVG';
@@ -10,10 +11,17 @@ import {
   LocationInfo,
   Logo,
   LogoContainer,
+  RemoteTag,
 } from './details-header.styles';
-import { View } from 'react-native';
 
-export const DetailsHeader = ({ logo, jobTitle, companyName, location }) => {
+export const DetailsHeader = ({
+  logo,
+  jobTitle,
+  companyName,
+  location,
+  isRemote,
+  postedOn,
+}) => {
   const validLogo = logo === null || checkImageIsSVG(logo) ? false : true;
   const locationDisplay = location ? location : null;
 
@@ -43,8 +51,15 @@ export const DetailsHeader = ({ logo, jobTitle, companyName, location }) => {
         </CompanyAndTitle>
 
         <LocationInfo style={{ paddingVertical: 6 }}>
-          <Text variant='body'>Hybrid</Text>
+          <Text variant='caption'>Posted: {postedOn}</Text>
           <Text variant='body'>{locationDisplay}</Text>
+          {isRemote ? (
+            <RemoteTag>
+              <Text variant='caption'>Remote</Text>
+            </RemoteTag>
+          ) : (
+            <Text />
+          )}
         </LocationInfo>
       </HeaderContent>
     </Container>

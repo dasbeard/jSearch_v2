@@ -9,10 +9,6 @@ import { AppNavigator } from './app.navigator';
 import { AuthContext } from '../services/authentication/authentication.context';
 import { FireStoreContext } from '../services/firestore/firestore.context';
 
-// import { ImageBackground } from 'react-native';
-
-// import BG from '../../assets/header2.jpg';
-
 const MyTheme = {
   ...DefaultTheme,
   colors: {
@@ -44,12 +40,3 @@ export const EntryNavigation = () => {
     </NavigationContainer>
   );
 };
-
-// <ImageBackground
-//   source={BG}
-//   style={{
-//     overflow: 'hidden',
-//     flex: 1,
-//   }}
-// >
-// </ImageBackground>
