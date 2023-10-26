@@ -38,7 +38,6 @@ export const HomeScreen = () => {
         <Text>{dataError}</Text>
       ) : (
         <FlatList
-          // data={data}
           data={searchResults}
           keyExtractor={(item) => item.job_id}
           renderItem={({ item }) => {

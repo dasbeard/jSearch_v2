@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Platform, ScrollView, View } from 'react-native';
+import { Linking, Platform, ScrollView, View } from 'react-native';
 import { Button, Surface } from 'react-native-paper';
 
 import { DetailsHeader } from '../../components/job-details/job-details-header/details-header.component';
@@ -8,7 +8,12 @@ import { DetailsSelector } from '../../components/job-details/details-selector/d
 import { Spacer } from '../../infrastructure/components/spacer.component';
 import { Specifics } from '../../components/job-details/specifics/specifics.component';
 
-import { Container, ApplyButton, ApplyContainer } from './job-details.styles';
+import {
+  Container,
+  ApplyButton,
+  ApplyContainer,
+  DetailsContainer,
+} from './job-details.styles';
 
 export const JobDetails = ({ route }) => {
   const { jobDetails } = route.params;
@@ -21,12 +26,10 @@ export const JobDetails = ({ route }) => {
     jobDetails.job_posted_at_datetime_utc
   ).toLocaleDateString('en-US'));
 
+  console.log(jobDetails.saved);
+
   return (
-    <Container
-      style={{
-        paddingBottom: Platform.OS == 'android' ? 155 : 200,
-      }}
-    >
+    <Container>
       <Surface>
         <DetailsHeader
           logo={jobDetails.employer_logo}
@@ -40,7 +43,7 @@ export const JobDetails = ({ route }) => {
 
       <Spacer size='md' />
 
-      <View style={{ paddingHorizontal: 6, marginBottom: 40 }}>
+      <DetailsContainer>
         <DetailsSelector activeTab={activeTab} setActiveTab={setActiveTab} />
         <Spacer size='md' />
 
@@ -75,9 +78,11 @@ export const JobDetails = ({ route }) => {
             />
           ) : null}
         </ScrollView>
-      </View>
+      </DetailsContainer>
       <ApplyContainer>
-        <ApplyButton>Apply</ApplyButton>
+        <ApplyButton onPress={() => Linking.openURL(jobDetails.job_apply_link)}>
+          Apply
+        </ApplyButton>
       </ApplyContainer>
     </Container>
   );

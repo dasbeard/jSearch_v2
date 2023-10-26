@@ -2,10 +2,15 @@ import styled from 'styled-components/native';
 import { colors } from '../../infrastructure/theme/colors';
 import { Button } from 'react-native-paper';
 
+import { Platform } from 'react-native';
+
+const isAndroid = Platform.OS == 'android' ? true : false;
+
 export const Container = styled.View`
   flex: 1;
   background-color: ${colors.bg.secondary};
-  /* padding-bottom: 190px; */
+  /* padding-bottom: 195px; */
+  padding-bottom: ${isAndroid ? '180px' : '195px'};
 `;
 
 export const Logo = styled.Image`
@@ -17,19 +22,19 @@ export const Logo = styled.Image`
   align-self: center;
 `;
 
+export const DetailsContainer = styled.View`
+  padding-left: 6px;
+  padding-right: 6px;
+  margin-bottom: 40px;
+`;
+
 export const ApplyContainer = styled.View`
   position: absolute;
   width: 100%;
-  bottom: 31px;
+  /* bottom: 30px; */
+  bottom: ${isAndroid ? '10px' : '25px'};
   padding-top: 5px;
   padding-bottom: 5px;
-  /* background-color: rgba(34, 34, 34, 0.15); */
-  /* background-color: linear-gradient(
-    180deg,
-    rgba(34, 34, 34, 0.9023984593837535) 0%,
-    rgba(165, 165, 165, 0.5606617647058824) 53%,
-    rgba(245, 245, 245, 0) 100%
-  ); */
 `;
 
 export const ApplyButton = styled(Button).attrs({

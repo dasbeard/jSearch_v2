@@ -1,46 +1,84 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useContext, useEffect } from 'react';
+
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { IconButton } from 'react-native-paper';
 
 import { HomeScreen } from './home.screen';
+import { SavedScreen } from '../saved/saved.screen';
+import { UserAccount } from '../account/users-account.screen';
 
-import { JobDetails } from '../../screens/job-details/job-details.component';
-import { Fitler } from '../../features/filter/filter.component';
+import { FSContext } from '../../services/firestore/firestore.context';
+import { AuthContext } from '../../services/authentication/authentication.context';
 
-const Stack = createNativeStackNavigator();
+import { colors } from '../../infrastructure/theme/colors';
+import { Platform } from 'react-native';
+
+const Tab = createBottomTabNavigator();
 
 export const HomeNavigation = () => {
-  return (
-    <Stack.Navigator>
-      <Stack.Group
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen name='HomeScreen' component={HomeScreen} />
-      </Stack.Group>
+  const { dialogVisible, setDialogVisible, user } = useContext(AuthContext);
 
-      <Stack.Group
-        screenOptions={{
-          headerTitleAlign: 'center',
-          headerShown: true,
-          presentation: 'modal',
-        }}
-      >
-        <Stack.Screen
-          name='Filters'
-          component={Fitler}
-          options={{
-            title: 'Search Parameters',
-          }}
+  const { RetreiveSearchValues, RetrieveSavedPosts, updateSavedPosts } =
+    useContext(FSContext);
+
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarStyle: {
+          height: Platform.OS == 'android' ? 60 : 45,
+          paddingBottom: Platform.OS == 'android' ? 10 : 0,
+          backgroundColor: colors.bg.primary,
+          borderTopLeftRadius: 12,
+          borderTopRightRadius: 12,
+        },
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+
+          if (route.name === 'Home') {
+            iconName = focused ? 'home' : 'home-outline';
+            size = focused ? 28 : 24;
+          } else if (route.name === 'Saved') {
+            iconName = focused ? 'heart' : 'heart-outline';
+            size = focused ? 28 : 24;
+          } else if (route.name === 'Account') {
+            iconName = focused ? 'account' : 'account-outline';
+            size = focused ? 28 : 24;
+          }
+
+          return <IconButton icon={iconName} size={size} iconColor={color} />;
+        },
+        tabBarActiveTintColor: colors.ui.secondary,
+        tabBarInactiveTintColor: colors.ui.muted,
+        tabBarHideOnKeyboard: true,
+      })}
+    >
+      <Tab.Group>
+        <Tab.Screen name='Home' component={HomeScreen} />
+        <Tab.Screen
+          name='Saved'
+          component={SavedScreen}
+          listeners={() => ({
+            blur: () => {
+              if (updateSavedPosts) {
+                RetrieveSavedPosts(user.uid);
+              }
+            },
+          })}
         />
-        <Stack.Screen
-          name='Details'
-          component={JobDetails}
-          options={{
-            title: 'Job Details',
-            gestureEnabled: true,
-          }}
+        <Tab.Screen
+          name='Account'
+          component={UserAccount}
+          listeners={() => ({
+            blur: () => {
+              if (dialogVisible) {
+                // hide delete dialog when leaving account screen
+                setDialogVisible(false);
+              }
+            },
+          })}
         />
-      </Stack.Group>
-    </Stack.Navigator>
+      </Tab.Group>
+    </Tab.Navigator>
   );
 };

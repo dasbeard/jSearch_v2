@@ -1,5 +1,4 @@
 import { useContext, Fragment, useState } from 'react';
-import { View } from 'react-native';
 import { ActivityIndicator, Avatar, Button, Portal } from 'react-native-paper';
 
 import { Text } from '../../infrastructure/components/text.component';
@@ -12,16 +11,10 @@ import { Container, LogoutButton } from './users-account.styles';
 import { DeleteAccountPortal } from '../../components/alert/alert.component';
 
 export const UserAccount = () => {
-  const {
-    logoutUser,
-    user,
-    deleteAccount,
-    isLoading,
-    dialogVisible,
-    setDialogVisible,
-  } = useContext(AuthContext);
+  const { logoutUser, user, isLoading, dialogVisible, setDialogVisible } =
+    useContext(AuthContext);
 
-  const [showIndicator, setShowIndicator] = useState(false);
+  const [showIndicator] = useState(false);
 
   return (
     <Fragment>

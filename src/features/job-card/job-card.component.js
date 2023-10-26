@@ -41,15 +41,6 @@ export const JobCard = ({ jobData, UID, SetAppliedStatus, SetSavedStatus }) => {
     setSaved(jobData.saved);
   }, []);
 
-  // console.log(
-  //   'company: ',
-  //   jobData.employer_name,
-  //   ' saved:',
-  //   jobData.saved,
-  //   ' applied:',
-  //   jobData.applied
-  // );
-
   return (
     <Container>
       <TouchableOpacity

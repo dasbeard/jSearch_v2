@@ -24,7 +24,7 @@ import { colors } from '../../infrastructure/theme/colors';
 import { FSContext } from '../../services/firestore/firestore.context';
 import { AuthContext } from '../../services/authentication/authentication.context';
 
-export const Fitler = () => {
+export const Filter = () => {
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
 

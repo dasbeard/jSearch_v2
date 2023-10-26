@@ -167,6 +167,8 @@ export const FireStoreContext = ({ children }) => {
   const SetSavedStatus = async (uid, postData, savedStatus) => {
     console.log('-- Firestore.Context -- SetSavedStatus --');
 
+    // UpdateSearchResultsSaveStatus(postData.job_id, savedStatus);
+
     const docRef = doc(
       FIREBASE_DB,
       'users',
@@ -207,6 +209,25 @@ export const FireStoreContext = ({ children }) => {
       setSavedPostsIDs([...savedPostsIDs, postData.job_id]);
       setSavedPosts([...savedPosts, postData]);
     }
+  };
+
+  const UpdateSearchResultsSaveStatus = (postID, savedStatus) => {
+    console.log('**** UpdateSearchResults');
+
+    // Not updating between screens - state isn't getting triggered
+
+    const newResults = searchResults.map((post) => {
+      if (post.job_id === postID) {
+        return {
+          ...post,
+          saved: savedStatus,
+        };
+      } else {
+        return post;
+      }
+    });
+
+    setSearchResults(newResults);
   };
 
   return (

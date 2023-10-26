@@ -1,7 +1,13 @@
 import axios from 'axios';
 
+import * as tempSearchData from '../../testSearchData.json';
+const data = tempSearchData.data;
+
 export const CallProxy = async (searchParams) => {
-  // return;
+  // *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+  // Return the test data to not use API calls
+  return data;
+  // *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
 
   if (!searchParams) {
     console.log('*-*-*- CallProxy - no searchParams ');
