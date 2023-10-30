@@ -90,7 +90,7 @@ export const FireStoreContext = ({ children }) => {
     RetreiveJobPosts(newParams);
   };
 
-  const RetreiveJobPosts = async (searchValues, mySavedPost) => {
+  const RetreiveJobPosts = async (searchValues) => {
     console.log('*-*-*- RetreiveJobPosts');
     // console.log('savedPostsIDs', savedPostsIDs);
 
@@ -137,18 +137,18 @@ export const FireStoreContext = ({ children }) => {
         await deleteDoc(docRef);
 
         // Update state on screen change
-        setUpdateSavedPosts(true);
+        // setUpdateSavedPosts(true);
       } else {
         //  Update Applied status
         await updateDoc(docRef, { applied: appliedStatus });
 
-        const newList = savedPosts.map((el) => {
-          if (el.job_id === postData.job_id) {
-            return postData;
-          }
-          return el;
-        });
-        setSavedPosts(newList);
+        // const newList = savedPosts.map((el) => {
+        //   if (el.job_id === postData.job_id) {
+        //     return postData;
+        //   }
+        //   return el;
+        // });
+        // setSavedPosts(newList);
       }
     } else {
       // Create doc in Firestore
@@ -157,11 +157,12 @@ export const FireStoreContext = ({ children }) => {
         saved: false,
         applied: true,
       };
-      setDoc(docRef, postData, { merge: true });
+      await setDoc(docRef, postData, { merge: true });
 
-      setSavedPostsIDs([...savedPostsIDs, postData.job_id]);
-      setSavedPosts([...savedPosts, postData]);
+      // setSavedPostsIDs([...savedPostsIDs, postData.job_id]);
+      // setSavedPosts([...savedPosts, postData]);
     }
+    RetrieveSavedPosts(uid);
   };
 
   const SetSavedStatus = async (uid, postData, savedStatus) => {
@@ -184,18 +185,18 @@ export const FireStoreContext = ({ children }) => {
         await deleteDoc(docRef);
 
         // Update state on screen change
-        setUpdateSavedPosts(true);
+        // setUpdateSavedPosts(true);
       } else {
         //  Update Applied status
         await updateDoc(docRef, { saved: savedStatus });
 
-        const newList = savedPosts.map((el) => {
-          if (el.job_id === postData.job_id) {
-            return postData;
-          }
-          return el;
-        });
-        setSavedPosts(newList);
+        // const newList = savedPosts.map((el) => {
+        //   if (el.job_id === postData.job_id) {
+        //     return postData;
+        //   }
+        //   return el;
+        // });
+        // setSavedPosts(newList);
       }
     } else {
       // Create doc in Firestore
@@ -204,11 +205,12 @@ export const FireStoreContext = ({ children }) => {
         saved: true,
         applied: false,
       };
-      setDoc(docRef, postData, { merge: true });
+      await setDoc(docRef, postData, { merge: true });
 
-      setSavedPostsIDs([...savedPostsIDs, postData.job_id]);
-      setSavedPosts([...savedPosts, postData]);
+      // setSavedPostsIDs([...savedPostsIDs, postData.job_id]);
+      // setSavedPosts([...savedPosts, postData]);
     }
+    RetrieveSavedPosts(uid);
   };
 
   const UpdateSearchResultsSaveStatus = (postID, savedStatus) => {

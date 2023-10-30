@@ -40,7 +40,7 @@ export const Search = () => {
       <Searchbar
         style={{ width: '90%' }}
         inputStyle={{ fontSize: 14 }}
-        onIconPress={handleSearch}
+        onIconPress={() => handleSearchSubmit()}
         value={searchBar}
         elevation={1}
         onChangeText={(text) => handleOnChange(text)}
