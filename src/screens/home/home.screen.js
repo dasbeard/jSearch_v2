@@ -1,12 +1,13 @@
-import { Fragment, useContext, useEffect } from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { Fragment, useCallback, useContext, useEffect } from 'react';
+import { FlatList, Text } from 'react-native';
 
 import { Search } from '../../features/search/search.component';
 import { JobCard } from '../../features/job-card/job-card.component';
 
 import { AuthContext } from '../../services/authentication/authentication.context';
 import { FSContext } from '../../services/firestore/firestore.context';
-import { ActivityIndicator, Button } from 'react-native-paper';
+import { ActivityIndicator } from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
 
 export const HomeScreen = () => {
   const { user } = useContext(AuthContext);

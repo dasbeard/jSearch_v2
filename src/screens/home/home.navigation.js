@@ -16,10 +16,7 @@ import { Platform } from 'react-native';
 const Tab = createBottomTabNavigator();
 
 export const HomeNavigation = () => {
-  const { dialogVisible, setDialogVisible, user } = useContext(AuthContext);
-
-  const { RetreiveSearchValues, RetrieveSavedPosts, updateSavedPosts } =
-    useContext(FSContext);
+  const { dialogVisible, setDialogVisible } = useContext(AuthContext);
 
   return (
     <Tab.Navigator
@@ -59,11 +56,8 @@ export const HomeNavigation = () => {
           name='Saved'
           component={SavedScreen}
           listeners={() => ({
-            blur: () => {
-              if (updateSavedPosts) {
-                RetrieveSavedPosts(user.uid);
-              }
-            },
+            // blur: () => {
+            // },
           })}
         />
         <Tab.Screen

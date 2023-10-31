@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import {
+  getFocusedRouteNameFromRoute,
+  useNavigation,
+} from '@react-navigation/native';
 import { TouchableOpacity, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
 
@@ -25,6 +28,8 @@ export const JobCard = ({ jobData, UID, SetAppliedStatus, SetSavedStatus }) => {
     jobData.employer_logo === null || checkImageIsSVG(jobData.employer_logo)
       ? false
       : true;
+
+  // const screenName = getFocusedRouteNameFromRoute(route);
 
   const handleSavePost = () => {
     SetSavedStatus(UID, jobData, !saved);

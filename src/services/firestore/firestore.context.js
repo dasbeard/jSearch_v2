@@ -23,7 +23,6 @@ export const FireStoreContext = ({ children }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [savedPosts, setSavedPosts] = useState(null);
   const [savedPostsIDs, setSavedPostsIDs] = useState([]);
-  const [updateSavedPosts, setUpdateSavedPosts] = useState(false);
 
   const RetreiveSearchValues = async (uid) => {
     console.log('*-*-*- RetreiveSettings');
@@ -58,14 +57,11 @@ export const FireStoreContext = ({ children }) => {
     let savedPostsIDs = [];
 
     collSnapShot.forEach((doc) => {
-      // console.log(doc.id);
       savedPosts.push(doc.data());
       savedPostsIDs.push(doc.id);
     });
     setSavedPosts(savedPosts);
     setSavedPostsIDs(savedPostsIDs);
-
-    setUpdateSavedPosts(false);
   };
 
   const UpdateSearchQuery = async (uid, newQuery) => {
@@ -92,13 +88,10 @@ export const FireStoreContext = ({ children }) => {
 
   const RetreiveJobPosts = async (searchValues) => {
     console.log('*-*-*- RetreiveJobPosts');
-    // console.log('savedPostsIDs', savedPostsIDs);
-
     setDataLoading(true);
 
     await CallProxy(searchValues).then((searchResults) => {
       // Merge Posts with Saved Posts
-
       let myResults = [];
       searchResults.forEach((post) => {
         if (savedPostsIDs.includes(post.job_id)) {
@@ -135,20 +128,9 @@ export const FireStoreContext = ({ children }) => {
       if (!appliedStatus && !docSnap.data().saved) {
         // delete record
         await deleteDoc(docRef);
-
-        // Update state on screen change
-        // setUpdateSavedPosts(true);
       } else {
         //  Update Applied status
         await updateDoc(docRef, { applied: appliedStatus });
-
-        // const newList = savedPosts.map((el) => {
-        //   if (el.job_id === postData.job_id) {
-        //     return postData;
-        //   }
-        //   return el;
-        // });
-        // setSavedPosts(newList);
       }
     } else {
       // Create doc in Firestore
@@ -158,17 +140,13 @@ export const FireStoreContext = ({ children }) => {
         applied: true,
       };
       await setDoc(docRef, postData, { merge: true });
-
-      // setSavedPostsIDs([...savedPostsIDs, postData.job_id]);
-      // setSavedPosts([...savedPosts, postData]);
     }
+
     RetrieveSavedPosts(uid);
   };
 
   const SetSavedStatus = async (uid, postData, savedStatus) => {
     console.log('-- Firestore.Context -- SetSavedStatus --');
-
-    // UpdateSearchResultsSaveStatus(postData.job_id, savedStatus);
 
     const docRef = doc(
       FIREBASE_DB,
@@ -183,20 +161,9 @@ export const FireStoreContext = ({ children }) => {
       if (!savedStatus && !docSnap.data().applied) {
         // delete record
         await deleteDoc(docRef);
-
-        // Update state on screen change
-        // setUpdateSavedPosts(true);
       } else {
         //  Update Applied status
         await updateDoc(docRef, { saved: savedStatus });
-
-        // const newList = savedPosts.map((el) => {
-        //   if (el.job_id === postData.job_id) {
-        //     return postData;
-        //   }
-        //   return el;
-        // });
-        // setSavedPosts(newList);
       }
     } else {
       // Create doc in Firestore
@@ -206,30 +173,8 @@ export const FireStoreContext = ({ children }) => {
         applied: false,
       };
       await setDoc(docRef, postData, { merge: true });
-
-      // setSavedPostsIDs([...savedPostsIDs, postData.job_id]);
-      // setSavedPosts([...savedPosts, postData]);
     }
     RetrieveSavedPosts(uid);
-  };
-
-  const UpdateSearchResultsSaveStatus = (postID, savedStatus) => {
-    console.log('**** UpdateSearchResults');
-
-    // Not updating between screens - state isn't getting triggered
-
-    const newResults = searchResults.map((post) => {
-      if (post.job_id === postID) {
-        return {
-          ...post,
-          saved: savedStatus,
-        };
-      } else {
-        return post;
-      }
-    });
-
-    setSearchResults(newResults);
   };
 
   return (
@@ -247,7 +192,6 @@ export const FireStoreContext = ({ children }) => {
         fsSearchParameters,
         searchResults,
         savedPosts,
-        updateSavedPosts,
       }}
     >
       {children}
