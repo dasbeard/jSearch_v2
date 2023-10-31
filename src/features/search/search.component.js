@@ -9,17 +9,16 @@ import { FSContext } from '../../services/firestore/firestore.context';
 import { AuthContext } from '../../services/authentication/authentication.context';
 
 export const Search = () => {
-  const { fsSearchParameters, UpdateSearchQuery } = useContext(FSContext);
+  const { fsSearchParameters, UpdateSearchQuery, setApiPageNum } =
+    useContext(FSContext);
   const { user } = useContext(AuthContext);
   const [searchBar, setSearchBar] = useState('');
 
   const navigation = useNavigation();
 
-  const handleSearch = () => {
-    alert('Search!');
-  };
-
   const handleSearchSubmit = () => {
+    setApiPageNum(1);
+
     if (searchBar.trim() !== fsSearchParameters) {
       UpdateSearchQuery(user.uid, searchBar);
     }

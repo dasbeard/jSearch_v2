@@ -23,6 +23,7 @@ export const FireStoreContext = ({ children }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [savedPosts, setSavedPosts] = useState(null);
   const [savedPostsIDs, setSavedPostsIDs] = useState([]);
+  const [apiPageNum, setApiPageNum] = useState(1);
 
   const RetreiveSearchValues = async (uid) => {
     console.log('*-*-*- RetreiveSettings');
@@ -86,31 +87,67 @@ export const FireStoreContext = ({ children }) => {
     RetreiveJobPosts(newParams);
   };
 
-  const RetreiveJobPosts = async (searchValues) => {
+  const RetreiveJobPosts = async (searchValues, pageNum = 1) => {
     console.log('*-*-*- RetreiveJobPosts');
     setDataLoading(true);
 
-    await CallProxy(searchValues).then((searchResults) => {
-      // Merge Posts with Saved Posts
-      let myResults = [];
-      searchResults.forEach((post) => {
-        if (savedPostsIDs.includes(post.job_id)) {
-          let myPost = savedPosts.find((ob) => ob.job_id == post.job_id);
-          post = {
-            ...post,
-            saved: myPost.saved,
-            applied: myPost.applied,
-          };
-        } else {
-          post = { ...post, saved: false, applied: false };
-        }
-        myResults.push(post);
-      });
+    console.log('pageNum', pageNum);
+    console.log('apiPageNum', apiPageNum);
 
-      setSearchResults(myResults);
-      setDataLoading(false);
+    setApiPageNum(pageNum);
+
+    const newSearchResults = await CallProxy(searchValues, pageNum);
+    let newResultsList = [];
+
+    if (pageNum !== 1) {
+      // Append results to currentList
+      newResultsList = [...searchResults];
+    }
+
+    // Check if saved and update obj
+    newSearchResults.forEach((post) => {
+      if (savedPostsIDs.includes(post.job_id)) {
+        let thisPost = savedPosts.find((ob) => ob.job_id == post.job_id);
+        post = {
+          ...post,
+          saved: thisPost.saved,
+          applied: thisPost.applied,
+        };
+      } else {
+        post = { ...post, saved: false, applied: false };
+      }
+      newResultsList.push(post);
     });
+
+    setSearchResults(newResultsList);
+    setDataLoading(false);
   };
+
+  // const RetreiveJobPosts = async (searchValues) => {
+  //   console.log('*-*-*- RetreiveJobPosts');
+  //   setDataLoading(true);
+
+  //   await CallProxy(searchValues, apiPageNum).then((searchResults) => {
+  //     // Merge Posts with Saved Posts
+  //     let myResults = [];
+  //     searchResults.forEach((post) => {
+  //       if (savedPostsIDs.includes(post.job_id)) {
+  //         let myPost = savedPosts.find((ob) => ob.job_id == post.job_id);
+  //         post = {
+  //           ...post,
+  //           saved: myPost.saved,
+  //           applied: myPost.applied,
+  //         };
+  //       } else {
+  //         post = { ...post, saved: false, applied: false };
+  //       }
+  //       myResults.push(post);
+  //     });
+
+  //     setSearchResults(myResults);
+  //     setDataLoading(false);
+  //   });
+  // };
 
   const SetAppliedStatus = async (uid, postData, appliedStatus) => {
     console.log('-- Firestore.Context -- SetAppliedStatus --');
@@ -192,6 +229,9 @@ export const FireStoreContext = ({ children }) => {
         fsSearchParameters,
         searchResults,
         savedPosts,
+
+        apiPageNum,
+        setApiPageNum,
       }}
     >
       {children}

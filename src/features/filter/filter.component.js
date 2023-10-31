@@ -28,7 +28,8 @@ export const Filter = () => {
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
 
-  const { UpdateSearchParameters, fsSearchParameters } = useContext(FSContext);
+  const { UpdateSearchParameters, fsSearchParameters, setApiPageNum } =
+    useContext(FSContext);
 
   const [searchModified, setSearchModified] = useState(false);
   const [location, setLocation] = useState(fsSearchParameters.location);
@@ -45,6 +46,7 @@ export const Filter = () => {
 
   const handleUpdateParameter = (parameter, value) => {
     setSearchModified(true);
+    setApiPageNum(1);
 
     switch (parameter) {
       case 'location':

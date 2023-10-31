@@ -1,12 +1,43 @@
 import axios from 'axios';
 
 import * as tempSearchData from '../../testSearchData.json';
+import * as tempSearchData1 from '../../testSearchData1.json';
+import * as tempSearchData2 from '../../testSearchData2.json';
+import * as tempSearchData3 from '../../testSearchData3.json';
 const data = tempSearchData.data;
+const data1 = tempSearchData1.data;
+const data2 = tempSearchData2.data;
+const data3 = tempSearchData3.data;
 
-export const CallProxy = async (searchParams) => {
+export const CallProxy = async (searchParams, page) => {
   // *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
   // Return the test data to not use API calls
-  return data;
+
+  switch (page) {
+    case 1:
+      console.log('returning Data0');
+      return data;
+      break;
+    case 2:
+      console.log('returning Data1');
+      return data1;
+      break;
+    case 3:
+      console.log('returning Data2');
+      return data2;
+      break;
+    case 4:
+      console.log('returning Data3');
+      return data3;
+      break;
+
+    default:
+      console.log('default returning Data');
+      return data;
+      break;
+  }
+
+  return;
   // *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
 
   if (!searchParams) {
