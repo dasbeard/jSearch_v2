@@ -19,7 +19,7 @@ export const FSContext = createContext();
 
 export const FireStoreContext = ({ children }) => {
   const [fsSearchParameters, setFsSearchParameters] = useState(null);
-  const [dataLoading, setDataLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(true);
   const [searchResults, setSearchResults] = useState([]);
   const [savedPosts, setSavedPosts] = useState(null);
   const [savedPostsIDs, setSavedPostsIDs] = useState([]);
@@ -94,15 +94,13 @@ export const FireStoreContext = ({ children }) => {
     console.log('pageNum', pageNum);
     console.log('apiPageNum', apiPageNum);
 
-    setApiPageNum(pageNum);
-
     const newSearchResults = await CallProxy(searchValues, pageNum);
     let newResultsList = [];
 
-    if (pageNum !== 1) {
-      // Append results to currentList
-      newResultsList = [...searchResults];
-    }
+    // if (pageNum !== 1) {
+    //   // Append results to currentList
+    //   newResultsList = [...searchResults];
+    // }
 
     // Check if saved and update obj
     newSearchResults.forEach((post) => {
@@ -119,8 +117,10 @@ export const FireStoreContext = ({ children }) => {
       newResultsList.push(post);
     });
 
-    setSearchResults(newResultsList);
+    setApiPageNum(pageNum + 1);
+    // setSearchResults(newResultsList);
     setDataLoading(false);
+    return newResultsList;
   };
 
   // const RetreiveJobPosts = async (searchValues) => {

@@ -1,4 +1,4 @@
-import { Fragment, useContext, useEffect, useRef } from 'react';
+import { Fragment, useContext, useEffect, useRef, useState } from 'react';
 import { FlatList, Text } from 'react-native';
 import { ActivityIndicator, Button } from 'react-native-paper';
 
@@ -9,106 +9,102 @@ import { AuthContext } from '../../services/authentication/authentication.contex
 import { FSContext } from '../../services/firestore/firestore.context';
 import { colors } from '../../infrastructure/theme/colors';
 
-export const LoadMore = () => {
-  const { apiPageNum, RetreiveJobPosts, fsSearchParameters } =
-    useContext(FSContext);
-
-  // const handleLoadMore = () => {
-  //   RetreiveJobPosts(fsSearchParameters, apiPageNum + 1);
-
-  // };
-
-  return (
-    <Button
-      mode='contained'
-      buttonColor={colors.ui.primary}
-      style={{ marginVertical: 9 }}
-      onPress={handleLoadMore}
-    >
-      Load More
-    </Button>
-  );
-};
-
 export const HomeScreen = () => {
   const { user } = useContext(AuthContext);
   const dataError = false;
+
+  const [displayData, setDisplayData] = useState([]);
 
   const {
     RetreiveJobPosts,
     searchResults,
     dataLoading,
     fsSearchParameters,
-
     SetAppliedStatus,
     SetSavedStatus,
     apiPageNum,
   } = useContext(FSContext);
 
-  const flatListRef = useRef();
-
-  const handleLoadMore = async () => {
-    await RetreiveJobPosts(fsSearchParameters, apiPageNum + 1);
-    // flatListRef.scrollToIndex({ animated: true, index: apiPageNum + 10 });
-  };
+  // useEffect(() => {
+  //   setInitalData();
+  //   console.log('useEffect11');
+  // }, []);
 
   useEffect(() => {
     if (fsSearchParameters !== null) {
-      RetreiveJobPosts(fsSearchParameters);
+      // setDisplayData(RetreiveJobPosts(fsSearchParameters, apiPageNum));
+      getData();
     }
   }, [fsSearchParameters]);
 
-  useEffect(() => {
-    console.log('apiPageNum', apiPageNum);
-    if (apiPageNum > 1) {
-      const position = apiPageNum * 10 - 2;
-      console.log('position', position);
-      console.log('Item', searchResults[position].job_id);
+  // const setInitalData = async () => {
+  //   setDisplayData(await RetreiveJobPosts(fsSearchParameters, apiPageNum));
+  // };
 
-      flatListRef.current.scrollToItem({
-        index: searchResults[5],
-      });
+  const handleLoadMore = async () => {
+    const newData = await RetreiveJobPosts(fsSearchParameters, apiPageNum + 1);
+
+    setDisplayData((previousData) => [...previousData, ...newData]);
+  };
+
+  const getData = async () => {
+    const newData = await RetreiveJobPosts(fsSearchParameters, apiPageNum);
+
+    if (apiPageNum == 1) {
+      setDisplayData(newData);
+    } else {
+      setDisplayData((previousData) => [...previousData, ...newData]);
     }
-  }, [searchResults]);
+  };
 
   return (
     <Fragment>
       <Search />
 
-      {dataLoading ? (
+      {dataLoading && !displayData.length ? (
         <ActivityIndicator animating={true} size={62} style={{ top: '40%' }} />
       ) : dataError ? (
         <Text>{dataError}</Text>
       ) : (
         <Fragment>
           <FlatList
-            data={searchResults}
+            maintainVisibleContentPosition={{
+              minIndexForVisible: 2,
+            }}
+            // onEndReachedThreshold={1}
+            data={displayData}
             keyExtractor={(item) => item.job_id}
             style={{ width: '95%', alignSelf: 'center' }}
-            ref={flatListRef}
+            // ref={flatListRef}
+            renderItem={({ item, index }) => (
+              <JobCard
+                jobData={item}
+                index={index}
+                SetAppliedStatus={SetAppliedStatus}
+                SetSavedStatus={SetSavedStatus}
+                UID={user.uid}
+              />
+            )}
+            extraData={displayData}
             ListFooterComponent={
               <Button
                 mode='contained'
                 buttonColor={colors.ui.primary}
                 style={{ marginVertical: 9 }}
-                onPress={handleLoadMore}
+                // onPress={handleLoadMore}
+                onPress={getData}
               >
                 Load More
               </Button>
             }
-            // onEndReached={() =>
-            //   RetreiveJobPosts(fsSearchParameters, apiPageNum + 1)
-            // }
-            renderItem={({ item }) => {
-              return (
-                <JobCard
-                  jobData={item}
-                  SetAppliedStatus={SetAppliedStatus}
-                  SetSavedStatus={SetSavedStatus}
-                  UID={user.uid}
-                />
-              );
-            }}
+            // initialScrollIndex={0}
+
+            getItemLayout={(_, index) => ({
+              length: 75, //  WIDTH + (MARGIN_HORIZONTAL * 2)
+              offset: 75 * index, //  ( WIDTH + (MARGIN_HORIZONTAL*2) ) * (index)
+              index,
+            })}
+            onEndReached={() => getData()}
           />
         </Fragment>
       )}

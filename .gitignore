@@ -38,3 +38,8 @@ yarn-error.*
 # Testing components 
 ModalTester.js
 deleteme.json
+
+testSearchDataTemp.json
+testSearchData1Temp.json
+testSearchData2Temp.json
+testSearchData3Temp.json

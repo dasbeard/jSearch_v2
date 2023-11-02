@@ -1,5 +1,9 @@
 import axios from 'axios';
 
+// import * as tempSearchData from '../../testSearchDataTemp.json';
+// import * as tempSearchData1 from '../../testSearchData1Temp.json';
+// import * as tempSearchData2 from '../../testSearchData2Temp.json';
+// import * as tempSearchData3 from '../../testSearchData3Temp.json';
 import * as tempSearchData from '../../testSearchData.json';
 import * as tempSearchData1 from '../../testSearchData1.json';
 import * as tempSearchData2 from '../../testSearchData2.json';
