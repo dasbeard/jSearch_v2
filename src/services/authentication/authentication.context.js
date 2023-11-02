@@ -18,6 +18,7 @@ import { FIREBASE_APP } from './firebase.initialization';
 import {
   CreateNewRecord,
   DeleteData,
+  DeleteUsersData,
   // GetSearchParameters,
 } from '../firestore/firestore.context';
 
@@ -133,9 +134,14 @@ export const AuthenticationContext = ({ children }) => {
     const user = FIREBASE_AUTH.currentUser;
 
     setIsLoading(true);
+
+    console.log('Call Delete - 111');
+
+    await DeleteUsersData(user.uid);
+
     deleteUser(user)
       .then(() => {
-        DeleteData(user.uid);
+        console.log('User Deleted - 555');
         setDialogVisible(false);
         setIsLoading(false);
       })

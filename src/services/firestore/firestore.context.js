@@ -258,7 +258,8 @@ export const CreateNewRecord = async (uid) => {
 };
 
 export const DeleteUsersData = async (uid) => {
-  // Need to delete SavedPosts SubCollection
-
+  // Subcollection need to be deleted by fb Function
+  // await deleteDoc(doc(FIREBASE_DB, 'users', uid, 'savedPosts'));
   await deleteDoc(doc(FIREBASE_DB, 'users', uid));
+  return;
 };
